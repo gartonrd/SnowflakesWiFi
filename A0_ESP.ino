@@ -16,6 +16,7 @@
 //        do not turn all displays off with start of new pattern
 //        show record number in decimal, not alpha
 //
+//
 //    18Feb2016  Dean Garton
 //      display patterns per tables in EEPROM
 
