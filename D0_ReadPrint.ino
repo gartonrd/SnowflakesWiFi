@@ -1,19 +1,27 @@
 //Snowflakes WiFi 
 //  ReadPatternRecord()
-//  ReadProfileRecord()
 //  GetPatternName()
 //  
-//  PrintCheckStartOfPattern()
+//  PrintCheckHeading()
 //  PrintCheckRecord()
-//  PrintEndOfTable()
 //  
-//  PrintStartOfPattern()
+//  PrintHeading()
 //  PrintRecord()
-//  
+//
+//  PrintRecordNumber()
 //  PrintRecordContents()
-//  RecordNumberToColumnNumber()
-//  FatalTableError()
-//  
+//
+//  PrintNewLine()
+//  PrintBreakLine()
+//
+//  PatternStateError()
+//  RecordIDError()
+//  ProfileNumberError()
+//  ProfileStateError()
+// 
+//    11Mar2016  Dean Garton
+//      version 2
+//
 //    18Feb2016  Dean Garton
 //      get and print records
 //      
@@ -27,19 +35,6 @@ void ReadPatternRecord(void)
   ReadEeprom(PatternAddress, PatternRecord, Length);
 }
 
-void ReadProfileRecord(uint8_t ProfileNumber)
-{
-  uint32_t ProfileNumber32;
-  uint32_t Length;
-  uint32_t MemoryAddress;
-  
-  //read from eeprom
-  ProfileNumber32 = ProfileNumber;
-  Length = sizeof(ProfileRecord);
-  MemoryAddress = ProfileNumber32 * Length;
-  ReadEeprom(MemoryAddress, ProfileRecord, Length);
-}
-
 void GetPatternName(void)
 {
   uint8_t Index;
@@ -49,7 +44,7 @@ void GetPatternName(void)
   while(Index < 8)
   {
     //copy one character
-    PatternName[Index] = PatternRecord[Index+3];
+    PatternName[Index] = PatternRecord[Index+2];
     
     //next
     Index += 1;
@@ -59,61 +54,59 @@ void GetPatternName(void)
   PatternName[8] = '\0';
 }
 
-void PrintCheckStartOfPattern(void)
+void PrintCheckHeading(void)
 {
-  Serial.println("PatternName   Record# : RecordContents");
+  Serial.println("");
+  Serial.println("PatternName  Record# : RecordContents");
 }
 
 void  PrintCheckRecord(uint32_t Length)
-{
-  char ColumnNumber[3];
-  
-  //print header
+{ 
+  //print info
   Serial.print(PatternName);
-  Serial.print("      ");
-  if(PatternRecord[0] == 0x80)
-  {
-    Serial.print(RecordNumber, HEX);
-    Serial.print("       : ");
-  }
-  else
-  {
-    RecordNumberToColumnNumber(ColumnNumber);
-    Serial.print(ColumnNumber);
-    Serial.print("      : ");
-  }
-  
-  //print record contents
+  Serial.print("     ");
+  PrintRecordNumber();
+  Serial.print("       : ");
   PrintRecordContents(Length);
 }
 
-void PrintEndOfTable(void)
+void PrintHeading(void)
 {
-  Serial.println("==================================");
-}
-
-void PrintStartOfPattern(void)
-{
-  Serial.println("PatternName  Reps  Scale  Record# : RecordContents");
+  Serial.println("");
+  Serial.println("PatternName  Reps  Record# : RecordContents");
 }
 
 void  PrintRecord(uint32_t Length)
-{
-  char ColumnNumber[3];
-  
-  //print header
+{ 
+  //print info
   Serial.print(PatternName);
   Serial.print("     ");
   Serial.print(PatternReps);
   Serial.print("     ");
-  Serial.print(ScaleFactor);
-  Serial.print("    ");
-  RecordNumberToColumnNumber(ColumnNumber);
-  Serial.print(ColumnNumber);
-  Serial.print("      : ");
-
-  //print record contents
+  PrintRecordNumber();
+  Serial.print("       : ");
   PrintRecordContents(Length);
+}
+
+void PrintRecordNumber()
+{
+  switch(PatternRecord[0])
+  {
+     //profile record
+    case 0x80:
+      Serial.print(PatternRecord[1]);
+    break;
+
+    //pattern record
+    case 0x81:
+      Serial.print(RecordNumber);
+    break;
+
+    //space
+    default:
+      Serial.print(" ");
+    break;
+  }
 }
 
 void PrintRecordContents(uint32_t Length)
@@ -131,66 +124,81 @@ void PrintRecordContents(uint32_t Length)
   Serial.println("");
 }
 
-void RecordNumberToColumnNumber(char *ColumnNumber)
+void PrintNewLine(void)
 {
-  //calculate MSD
-  if(RecordNumber <= 26)
-  {
-    
-    ColumnNumber[0] = ' ';
-  }
-  else
-  {
-    ColumnNumber[0] = (((RecordNumber-1)/26)-1) + 'A';
-  }
-
-  //calculate LSD
-  if(RecordNumber == 0)
-  {
-    //case per record ID
-    switch(PatternRecord[0])
-    {
-      //start of pattern record
-      case 0x90:
-        ColumnNumber[0] = 'S';
-        ColumnNumber[1] = 'P';
-      break;
-  
-      //end of table record
-      case 0x91:
-        ColumnNumber[0] = 'E';
-        ColumnNumber[1] = 'T';
-      break;
-  
-      //other record
-      default:
-        ColumnNumber[0] = '0';
-        ColumnNumber[1] = '0';
-      break;
-    }
-  }
-  else
-  {
-    ColumnNumber[1] = ((RecordNumber-1)%26) + 'A';
-  }
-  
-  //add end of string
-  ColumnNumber[2] = '\0';
+  Serial.println("");
 }
 
-void FatalTableError()
+void PrintBreakLine(void)
 {
-  uint32_t Length;
-    
-  //print record data
-  Length = sizeof(PatternRecord);
-  PrintRecord(Length);
-      
+  Serial.println("");
+  Serial.println("==================================");
+}
+
+void PatternStateError(void)
+{
   //print error message
-  Serial.println("Bad record ID");
+  Serial.println("");
+  Serial.print("BAD PATTERN STATE: ");
+  Serial.println(PatternState, HEX);
+  Serial.println("");
   
   //quit
   StopExecution();
-  PatternState = 10;
+  PatternState = 7;
 }
+
+void RecordIDError(void)
+{
+  uint32_t Length;
+    
+  //print error message
+  Serial.println("");
+  Serial.print("BAD RECORD ID: ");
+
+  //print record contents
+  Length = sizeof(PatternRecord);
+  PrintRecordContents(Length);
+  Serial.println("");
+  
+  //quit
+  StopExecution();
+  PatternState = 7;
+}
+
+void ProfileNumberError(uint16_t ProfileNumber)
+{
+  uint16_t ProfileSize;
+    
+  //print error message
+  ProfileSize = PROFILE_SIZE;
+  Serial.println("");
+  Serial.print("BAD PROFILE NUMBER: ");
+  Serial.print(ProfileNumber);
+  Serial.print(" (MAXIMUM IS: ");
+  Serial.print(ProfileSize);
+  Serial.println(")");
+  Serial.println("");
+  
+  //quit
+  StopExecution();
+  PatternState = 7;
+}
+
+void ProfileStateError(uint8_t Index)
+{
+  //print error message
+  Serial.println("");
+  Serial.print("BAD PROFILE STATE: ");
+  Serial.print(ProfileState[Index], HEX);
+  Serial.print(" (PROFILE: ");
+  Serial.print(Index);
+  Serial.println(")");
+  Serial.println("");
+  
+  //quit
+  StopExecution();
+  PatternState = 7;
+}
+
 

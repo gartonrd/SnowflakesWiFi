@@ -16,6 +16,9 @@
 //     may have up to 4 chips
 //     hi memory address bit is part of device address
 //     
+//    11Mar2016  Dean Garton 
+//      version 2 
+//  
 //    18Feb2016  Dean Garton
 //      based on EEPROM routines from various examples
 

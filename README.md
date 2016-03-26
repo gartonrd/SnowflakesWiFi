@@ -2,12 +2,12 @@
 
 Code and documentation to run a 16 snowflake display
 
-Documentation
+Documentation:
 
-  Specification.pdf
+-- Specification.pdf
 
-  SoftwareDesign.pdf
+-- SoftwareDesign.pdf
 
-Code
+Code:
 
-  *.ino files for Arduino IDE
+-- *.ino files for Arduino IDE

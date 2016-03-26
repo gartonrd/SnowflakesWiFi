@@ -3,6 +3,9 @@
 //  Walk()
 //  VersionNumber()
 //  
+//    11Mar2016  Dean Garton 
+//      version 2 
+//  
 //    18Feb2016  Dean Garton
 //      All Off
 //      Light each flake, one at a time
@@ -65,7 +68,7 @@ void VersionNumber(void)
   //loop to display version number
   Index = 0;
   Mask = 1;
-  VerNum = Version;
+  VerNum = VERSION;
   
   while(Index < 16)
   {
