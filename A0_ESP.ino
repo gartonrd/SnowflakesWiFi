@@ -26,6 +26,9 @@
 //includes
   #include <Wire.h>
   #include <Ticker.h>
+  #include <ESP8266WiFi.h>
+  #include <ESP8266WebServer.h>
+
 
 //defines
   #define START_OF_PATTERN_LENGTH 10;
@@ -36,7 +39,8 @@
 
 //objects
   Ticker TimerIRQ;
-
+  ESP8266WebServer server(80);
+  
 //global variables
   uint8_t Execute;
 
@@ -87,14 +91,21 @@ void setup()
   //display test pattern
   DisplayTestPattern(1000);
 
+  StartWebServer(server);
+
   //start execution
   //completely interrupt driven from timer
   StartExecution();
+
 }
 
 void loop()
 { 
   char CharacterReceived;
+
+
+  // Check for activity on HTTP server
+  server.handleClient();
   
    //if character typed
   if(Serial.available() > 0)
