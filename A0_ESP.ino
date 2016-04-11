@@ -5,7 +5,12 @@
 //  HandleTimerIRQ()
 //  StartExecution()
 //  StopExecution()
-//  
+
+//    Apr2016 Kevin Garton
+//      version 3
+//      implement HTTP server for uploading
+//      patterns in ASCII hex to EEPROM
+//
 //    11Mar2016  Dean Garton
 //      version 2
 //        allow profiles to be redefined for each new pattern
@@ -21,14 +26,17 @@
 //      display patterns per tables in EEPROM
 
 //version number
-  #define VERSION 0x0002
+  #define VERSION 0x0003
+
+//login information for HTTP server
+  const char* ssid = "your_ssid";
+  const char* password = "your_password";
 
 //includes
   #include <Wire.h>
   #include <Ticker.h>
   #include <ESP8266WiFi.h>
   #include <ESP8266WebServer.h>
-
 
 //defines
   #define START_OF_PATTERN_LENGTH 10;
