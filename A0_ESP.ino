@@ -8,8 +8,8 @@
 
 //    Apr2016 Kevin Garton
 //      version 3
-//      implement HTTP server for uploading
-//      patterns in ASCII hex to EEPROM
+//        implement HTTP server for uploading
+//        patterns in ASCII hex to EEPROM
 //
 //    11Mar2016  Dean Garton
 //      version 2

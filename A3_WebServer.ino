@@ -1,34 +1,52 @@
+//Snowflakes WiFi
+//  HandleIndex()
+//  ascii_to_bytes(uint8_t ascii, int len)
+//  HandleUpload()
+//  HandleUploadRequest()
+//  StartWebServer()
+//
+//  Apr2016 Kevin Garton
+//    Version 1
+//      Implement an HTTP-based interface for uploading
+//      patterns into EEPROM.
+
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 
 String main_page = "<HTML><form method=\"POST\" enctype=\"multipart/form-data\" action=\"upload\"><input type=\"file\" name=\"filename\"><br /><input type=\"submit\" value=\"LET'S DO THIS\"></form></HTML>";
-String upload_page = "<HTML><script>;alert(\"javascript in this\")</script></HTML>";
 
 // These are used during conversion of ASCII hex to bytes
 unsigned int line_number = 1;
 unsigned int chars_in_line = 0;
 unsigned int uploaded_bytes = 0;
 
-void HandleIndex(){
+void HandleIndex()
+{
   server.send(200, "text/html", main_page);
 }
 
-String ascii_to_bytes(uint8_t* ascii, int len){
+String ascii_to_bytes(uint8_t* ascii, int len)
+{
 
   int i,j;
   String returner;
   char newchar = 0x00;
-  for(j=0; j<len; ++j){
-    switch(ascii[j]){
+  for(j=0; j<len; ++j)
+  {
+    switch(ascii[j])
+    {
       case '#':
         // Handle comments
-        if(chars_in_line == 0){
-          while(j<len && ascii[j] != '\n'){
+        if(chars_in_line == 0)
+        {
+          while(j<len && ascii[j] != '\n')
+          {
             ++j;
           }
           line_number += 1;
         }
-        else{
+        else
+        {
           Serial.printf(
             "'#' character not in initial position on line %d; ignoring. '#' characters must start at the beginning of a line to indicate a comment.\n",
             line_number
@@ -124,7 +142,8 @@ String ascii_to_bytes(uint8_t* ascii, int len){
         newchar = newchar| (0x0F << ((chars_in_line % 2)*4));
         break;
       case '\n':
-        if(chars_in_line % 2 == 1){
+        if(chars_in_line % 2 == 1)
+        {
           Serial.printf("Odd number of ASCII hex characters (%d) on line %d; ignoring final nibble.\n",
             chars_in_line,
             line_number
@@ -151,7 +170,8 @@ String ascii_to_bytes(uint8_t* ascii, int len){
         );
         break;
     }
-    if(chars_in_line % 2 == 0 && chars_in_line > 0){
+    if(chars_in_line % 2 == 0 && chars_in_line > 0)
+    {
       returner += newchar;
       newchar = 0x00;
     }
@@ -160,17 +180,20 @@ String ascii_to_bytes(uint8_t* ascii, int len){
   return returner;
 }
 
-void HandleUpload(){
+void HandleUpload()
+{
 
   // Where is the documentation for HTTPUpload?
   HTTPUpload& upload = server.upload();
 
-  if(upload.status == UPLOAD_FILE_START){
+  if(upload.status == UPLOAD_FILE_START)
+  {
     Serial.println("Stopping execution for upload.");
     StopExecution();
     uploaded_bytes = 0;
   }
-  else if(upload.status == UPLOAD_FILE_WRITE){
+  else if(upload.status == UPLOAD_FILE_WRITE)
+  {
     int j;
     Serial.printf(
       "uploading %s (%d bytes added to prior %d bytes)\n",
@@ -192,7 +215,8 @@ void HandleUpload(){
     // I don't know why String.getBytes() wasn't working,
     // but it wasn't, so we do a cast manually here.
     uint8_t* data_bytes = (uint8_t*)malloc(sizeof(uint8_t)*data.length());
-    for(j=0; j<data.length(); ++j){
+    for(j=0; j<data.length(); ++j)
+    {
       data_bytes[j] = data[j];
     }
 
@@ -210,7 +234,8 @@ void HandleUpload(){
     free(data_bytes);
     Serial.printf("Written.\n");
   }
-  else if(upload.status == UPLOAD_FILE_END){
+  else if(upload.status == UPLOAD_FILE_END)
+  {
     Serial.printf(
       "upload complete: %d bytes uploaded.\n",
       upload.totalSize
@@ -225,7 +250,8 @@ void HandleUpload(){
   
 }
 
-void HandleUploadRequest(){
+void HandleUploadRequest()
+{
 
   HTTPUpload& upload = server.upload();
 
@@ -234,7 +260,8 @@ void HandleUploadRequest(){
   server.send(200, "text/plain", success_message);
 }
 
-void StartWebServer(ESP8266WebServer &server){
+void StartWebServer(ESP8266WebServer &server)
+{
 
   Serial.println("Starting HTTP server...");
 
@@ -244,7 +271,8 @@ void StartWebServer(ESP8266WebServer &server){
   Serial.print("Connecting to network");
   WiFi.begin(ssid, password);
 
-  while (WiFi.status() != WL_CONNECTED){
+  while (WiFi.status() != WL_CONNECTED)
+  {
       delay(500);
       Serial.print(".");
   }
