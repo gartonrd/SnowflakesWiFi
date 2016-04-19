@@ -11,8 +11,9 @@
 
 void CheckFirstRecord(void)
 {
+
   uint32_t Length;
-  
+
   //read from eeprom
   ReadPatternRecord();
 
@@ -22,7 +23,7 @@ void CheckFirstRecord(void)
     //start of pattern record
     case 0x90:
       //print break line
-      PrintBreakLine();
+      Serial.print(GetBreakLine());
         
       //next
       PatternState = 3;
@@ -57,7 +58,7 @@ void CheckProfileRecords(void)
       ProfileNumber = PatternRecord[1];
 
       //print
-      PrintCheckRecord(Length);
+      Serial.print(GetCheckRecord(Length));
 
       //check profile number
       ProfileSize = PROFILE_SIZE
@@ -72,7 +73,7 @@ void CheckProfileRecords(void)
     //pattern record
     case 0x81:
       //print blank line
-      PrintNewLine();
+      Serial.print("\n");
       
       //next
       PatternState = 3;
@@ -105,7 +106,7 @@ void CheckPatternRecords(void)
       PatternAddress += Length;
       
       //print
-      PrintCheckRecord(Length);
+      Serial.print(GetCheckRecord(Length));
     break;
 
     //start of pattern record
@@ -119,9 +120,9 @@ void CheckPatternRecords(void)
       PatternAddress += Length;
 
       //print
-      PrintCheckHeading();
-      PrintCheckRecord(Length);
-      PrintNewLine();
+      Serial.print(GetCheckHeading());
+      Serial.print(GetCheckRecord(Length));
+      Serial.print('\n');
 
       //next
       PatternState = 2;
@@ -138,11 +139,11 @@ void CheckPatternRecords(void)
       PatternAddress = 0;
 
       //print
-      PrintCheckHeading();
-      PrintCheckRecord(Length);
+      Serial.print(GetCheckHeading());
+      Serial.print(GetCheckRecord(Length));
 
       //next
-      PrintBreakLine();
+      Serial.print(GetBreakLine());
       PatternState = 5;
     break;
 

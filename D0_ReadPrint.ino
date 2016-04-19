@@ -35,7 +35,7 @@ void ReadPatternRecord(void)
   ReadEeprom(PatternAddress, PatternRecord, Length);
 }
 
-void GetPatternName(void)
+String GetPatternName(void)
 {
   uint8_t Index;
 
@@ -52,87 +52,83 @@ void GetPatternName(void)
 
   //add end of string
   PatternName[8] = '\0';
+  return PatternName;
 }
 
-void PrintCheckHeading(void)
+String GetCheckHeading(void)
 {
-  Serial.println("");
-  Serial.println("PatternName  Record# : RecordContents");
+  return "\nPatternName  Record# : RecordContents\n";
 }
 
-void  PrintCheckRecord(uint32_t Length)
+String  GetCheckRecord(uint32_t Length)
 { 
-  //print info
-  Serial.print(PatternName);
-  Serial.print("     ");
-  PrintRecordNumber();
-  Serial.print("       : ");
-  PrintRecordContents(Length);
+  String check_record;
+  check_record += PatternName;
+  check_record += "     ";
+  check_record += GetRecordNumber();
+  check_record += "       : ";
+  check_record += GetRecordContents(Length);
+  return check_record;
 }
 
-void PrintHeading(void)
+String GetHeading(void)
 {
-  Serial.println("");
-  Serial.println("PatternName  Reps  Record# : RecordContents");
+  return "\nPatternName  Reps  Record# : RecordContents\n";
 }
 
-void  PrintRecord(uint32_t Length)
+String  GetRecord(uint32_t Length)
 { 
-  //print info
-  Serial.print(PatternName);
-  Serial.print("     ");
-  Serial.print(PatternReps);
-  Serial.print("     ");
-  PrintRecordNumber();
-  Serial.print("       : ");
-  PrintRecordContents(Length);
+  String record;
+  record += PatternName;
+  record += "     ";
+  record += PatternReps;
+  record += "     ";
+  record += GetRecordNumber();
+  record += "       : ";
+  record += GetRecordContents(Length);
+  return record;
 }
 
-void PrintRecordNumber()
+String GetRecordNumber()
 {
   switch(PatternRecord[0])
   {
      //profile record
     case 0x80:
-      Serial.print(PatternRecord[1]);
+      return String(PatternRecord[1]);
     break;
 
     //pattern record
     case 0x81:
-      Serial.print(RecordNumber);
+      return String(RecordNumber);
     break;
 
     //space
     default:
-      Serial.print(" ");
+      return " ";
     break;
   }
 }
 
-void PrintRecordContents(uint32_t Length)
+String GetRecordContents(uint32_t Length)
 {
   uint16_t Index;
-  
+  String contents;
   //loop to print record contents
   Index = 0;
   while(Index < Length)
   {
-    Serial.print(PatternRecord[Index], HEX);
-    Serial.print(" ");
+    contents += String(PatternRecord[Index], HEX);
+    contents += " ";
     Index += 1;
   }
-  Serial.println("");
+  contents += '\n';
+  return contents;
 }
 
-void PrintNewLine(void)
+String GetBreakLine(void)
 {
-  Serial.println("");
-}
-
-void PrintBreakLine(void)
-{
-  Serial.println("");
-  Serial.println("==================================");
+  return "\n==================================\n";
 }
 
 void PatternStateError(void)
@@ -158,8 +154,7 @@ void RecordIDError(void)
 
   //print record contents
   Length = sizeof(PatternRecord);
-  PrintRecordContents(Length);
-  Serial.println("");
+  Serial.print(GetRecordContents(Length) + "\n");
   
   //quit
   StopExecution();
