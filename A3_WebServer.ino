@@ -52,95 +52,95 @@ String ascii_to_bytes(uint8_t* ascii, int len)
             line_number
           );
         }
-        break;
+      break;
       case '0':
         chars_in_line += 1;
         newchar = newchar| (0x00 << ((chars_in_line % 2)*4));
-        break;
+      break;
       case '1':
         chars_in_line += 1;
         newchar = newchar| (0x01 << ((chars_in_line % 2)*4));
-        break;
+      break;
       case '2':
         chars_in_line += 1;
         newchar = newchar| (0x02 << ((chars_in_line % 2)*4));
-        break;
+      break;
       case '3':
         chars_in_line += 1;
         newchar = newchar| (0x03 << ((chars_in_line % 2)*4));
-        break;
+      break;
       case '4':
         chars_in_line += 1;
         newchar = newchar| (0x04 << ((chars_in_line % 2)*4));
-        break;
+      break;
       case '5':
         chars_in_line += 1;
         newchar = newchar| (0x05 << ((chars_in_line % 2)*4));
-        break;
+      break;
       case '6':
         chars_in_line += 1;
         newchar = newchar| (0x06 << ((chars_in_line % 2)*4));
-        break;
+      break;
       case '7':
         chars_in_line += 1;
         newchar = newchar| (0x07 << ((chars_in_line % 2)*4));
-        break;
+      break;
       case '8':
         chars_in_line += 1;
         newchar = newchar| (0x08 << ((chars_in_line % 2)*4));
-        break;
+      break;
       case '9':
         chars_in_line += 1;
         newchar = newchar| (0x09 << ((chars_in_line % 2)*4));
-        break;
+      break;
       case 'A':
         chars_in_line += 1;
         newchar = newchar| (0x0A << ((chars_in_line % 2)*4));
-        break;
+      break;
       case 'B':
         chars_in_line += 1;
         newchar = newchar| (0x0B << ((chars_in_line % 2)*4));
-        break;
+      break;
       case 'C':
         chars_in_line += 1;
         newchar = newchar| (0x0C << ((chars_in_line % 2)*4));
-        break;
+      break;
       case 'D':
         chars_in_line += 1;
         newchar = newchar| (0x0D << ((chars_in_line % 2)*4));
-        break;
+      break;
       case 'E':
         chars_in_line += 1;
         newchar = newchar| (0x0E << ((chars_in_line % 2)*4));
-        break;
+      break;
       case 'F':
         chars_in_line += 1;
         newchar = newchar| (0x0F << ((chars_in_line % 2)*4));
-        break;
+      break;
       case 'a':
         chars_in_line += 1;
         newchar = newchar| (0x0A << ((chars_in_line % 2)*4));
-        break;
+      break;
       case 'b':
         chars_in_line += 1;
         newchar = newchar| (0x0B << ((chars_in_line % 2)*4));
-        break;
+      break;
       case 'c':
         chars_in_line += 1;
         newchar = newchar| (0x0C << ((chars_in_line % 2)*4));
-        break;
+      break;
       case 'd':
         chars_in_line += 1;
         newchar = newchar| (0x0D << ((chars_in_line % 2)*4));
-        break;
+      break;
       case 'e':
         chars_in_line += 1;
         newchar = newchar| (0x0E << ((chars_in_line % 2)*4));
-        break;
+      break;
       case 'f':
         chars_in_line += 1;
         newchar = newchar| (0x0F << ((chars_in_line % 2)*4));
-        break;
+      break;
       case '\n':
         if(chars_in_line % 2 == 1)
         {
@@ -152,23 +152,23 @@ String ascii_to_bytes(uint8_t* ascii, int len)
         }
         line_number += 1;
         chars_in_line = 0;
-        break;
+      break;
       case ' ':
         // Whitespace; ignore.
-        break;
+      break;
       case '\t':
         // Whitespace; ignore.
-        break;
+      break;
       case '\r':
         // Whitspace; ignore.
-        break;
+      break;
       default:
         Serial.printf(
           "Illegal character '%c' on line %d: Not an ASCII hex character or recognized whitespace. Ignoring.\n",
           ascii[j],
           line_number
         );
-        break;
+      break;
     }
     if(chars_in_line % 2 == 0 && chars_in_line > 0)
     {
