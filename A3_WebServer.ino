@@ -160,12 +160,15 @@ String AsciiToBytes(uint8_t* ascii, int len)
       break;
       case ' ':
         // Whitespace; ignore.
+        continue;
       break;
       case '\t':
         // Whitespace; ignore.
+        continue;
       break;
       case '\r':
         // Whitspace; ignore.
+        continue;
       break;
       default:
         Serial.printf(
