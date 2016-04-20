@@ -13,7 +13,7 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 
-String main_page = "<HTML><form method=\"POST\" enctype=\"multipart/form-data\" action=\"upload\"><input type=\"file\" name=\"filename\"><br /><input type=\"submit\" value=\"LET'S DO THIS\"></form></HTML>";
+String main_page = "<HTML><head><script src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js\"></script><script>$(function(){window.setInterval(get_status, 10);}); function get_status() {var request = new XMLHttpRequest();request.onreadystatechange = function(){if (request.readyState === 4  && request.status === 200){var elt = document.getElementById(\"status\");elt.innerHTML = request.responseText;}};request.open(\"GET\", \"curr\", true);request.send();}</script></head><p id=\"status\">No Status Yet Recieved</p><form method=\"POST\" enctype=\"multipart/form-data\" action=\"upload\"><input type=\"file\" name=\"filename\"><br /><input type=\"submit\" value=\"LET'S DO THIS\"></form></HTML>";
 
 // These are used during conversion of ASCII hex to bytes
 unsigned int line_number = 1;
@@ -22,6 +22,7 @@ unsigned int uploaded_bytes = 0;
 
 void HandleIndex()
 {
+  Serial.write("Handling index request...");
   server.send(200, "text/html", main_page);
 }
 
@@ -260,6 +261,12 @@ void HandleUploadRequest()
   server.send(200, "text/plain", success_message);
 }
 
+void HandleCurrStatus()
+{
+  // WebOutput is defined and managed in D0_ReadWrite
+  server.send(200, "text/plain", WebOutput);
+}
+
 void StartWebServer(ESP8266WebServer &server)
 {
 
@@ -271,10 +278,24 @@ void StartWebServer(ESP8266WebServer &server)
   Serial.print("Connecting to network");
   WiFi.begin(ssid, password);
 
+  int attempts = 0;
+  int max_attempts = 50;
+  int attempt_delay = 500; // milliseconds
   while (WiFi.status() != WL_CONNECTED)
   {
-      delay(500);
+      if(attempts >= max_attempts)
+      {
+        Serial.printf(
+          "\nGave up after %d attempts (~%ds). Are the SSID and password correct?\n",
+          max_attempts,
+          (max_attempts * attempt_delay) / 1000
+        );
+        Serial.print("Failed to start HTTP server.\n");
+        return;
+      }
+      delay(attempt_delay);
       Serial.print(".");
+      ++attempts;
   }
   Serial.println("Connected.");
   Serial.print("IP address: ");
@@ -283,6 +304,7 @@ void StartWebServer(ESP8266WebServer &server)
   // URL dispatching
   server.on("/", HTTP_GET, HandleIndex);
   server.on("/upload", HTTP_POST, HandleUploadRequest, HandleUpload);
+  server.on("/curr", HTTP_GET, HandleCurrStatus);
 
   // start server
   server.begin();

@@ -15,7 +15,7 @@ void NextPattern(void)
 
   //print data from eeprom
   Length = sizeof(PatternRecord);
-  Serial.print(GetRecord(Length));
+  WebPrint(GetRecord(Length));
 
   //reset timer
   PatternTimer = U8ToU16(PatternRecord[17], PatternRecord[18]);

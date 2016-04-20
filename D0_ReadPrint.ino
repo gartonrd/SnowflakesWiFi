@@ -2,17 +2,19 @@
 //  ReadPatternRecord()
 //  GetPatternName()
 //  
-//  PrintCheckHeading()
-//  PrintCheckRecord()
+//  WebPrint()
+//
+//  GetCheckHeading()
+//  GetCheckRecord()
 //  
-//  PrintHeading()
-//  PrintRecord()
+//  GetHeading()
+//  GetRecord()
 //
-//  PrintRecordNumber()
-//  PrintRecordContents()
+//  GetRecordNumber()
+//  GetRecordContents()
 //
-//  PrintNewLine()
-//  PrintBreakLine()
+//  GetNewLine()
+//  GetBreakLine()
 //
 //  PatternStateError()
 //  RecordIDError()
@@ -53,6 +55,12 @@ String GetPatternName(void)
   //add end of string
   PatternName[8] = '\0';
   return PatternName;
+}
+
+void WebPrint(String output)
+{
+  WebOutput = output;
+  Serial.print(output);  
 }
 
 String GetCheckHeading(void)

@@ -51,6 +51,7 @@
   
 //global variables
   uint8_t Execute;
+  String WebOutput = "";
 
 //profile parameters
   uint8_t  State[36];
