@@ -20,6 +20,10 @@
 //  RecordIDError()
 //  ProfileNumberError()
 //  ProfileStateError()
+//
+//    Apr2016 Kevin Garton
+//      Version 3
+//        Changed print functions to string generators.
 // 
 //    11Mar2016  Dean Garton
 //      version 2

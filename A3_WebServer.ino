@@ -1,9 +1,14 @@
 //Snowflakes WiFi
 //  HandleIndex()
-//  ascii_to_bytes(uint8_t ascii, int len)
+//  AsciiToBytes(uint8_t ascii, int len)
 //  HandleUpload()
 //  HandleUploadRequest()
+//  HandleCurrStatus()
 //  StartWebServer()
+//
+//  Apr2016 Kevin Garton
+//    Version 2
+//        Implemented basic record viewer.
 //
 //  Apr2016 Kevin Garton
 //    Version 1
@@ -22,11 +27,10 @@ unsigned int uploaded_bytes = 0;
 
 void HandleIndex()
 {
-  Serial.write("Handling index request...");
   server.send(200, "text/html", main_page);
 }
 
-String ascii_to_bytes(uint8_t* ascii, int len)
+String AsciiToBytes(uint8_t* ascii, int len)
 {
 
   int i,j;
@@ -202,7 +206,7 @@ void HandleUpload()
       upload.currentSize,
       upload.totalSize
     );
-    String data = ascii_to_bytes(
+    String data = AsciiToBytes(
       upload.buf,
       upload.currentSize
     );
@@ -263,7 +267,7 @@ void HandleUploadRequest()
 
 void HandleCurrStatus()
 {
-  // WebOutput is defined and managed in D0_ReadWrite
+  // WebOutput is defined in A0_ESP managed in D0_ReadWrite
   server.send(200, "text/plain", WebOutput);
 }
 
