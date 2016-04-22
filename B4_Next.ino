@@ -1,5 +1,11 @@
 //Snowflakes WiFi 
 //  NextPattern()
+//
+//    Apr2016 Kevin Garton
+//      Version 3
+//        Changed calls to print statements to calls to string
+//        builders, now that the print statements are instead
+//        string builders.
 //  
 //    11Mar2016  Dean Garton 
 //      version 2 
@@ -15,7 +21,7 @@ void NextPattern(void)
 
   //print data from eeprom
   Length = sizeof(PatternRecord);
-  PrintRecord(Length);
+  WebPrint(GetRecord(Length));
 
   //reset timer
   PatternTimer = U8ToU16(PatternRecord[17], PatternRecord[18]);

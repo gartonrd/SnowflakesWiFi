@@ -5,7 +5,12 @@
 //  HandleTimerIRQ()
 //  StartExecution()
 //  StopExecution()
-
+//
+//    Apr2016 Kevin Garton
+//      version 4
+//        Added initial implementation of record viewer in 
+//        A3_WebServer, requiring overhauls to D0_ReadPrint.
+//
 //    Apr2016 Kevin Garton
 //      version 3
 //        implement HTTP server for uploading
@@ -26,7 +31,7 @@
 //      display patterns per tables in EEPROM
 
 //version number
-  #define VERSION 0x0003
+  #define VERSION 0x0004
 
 //login information for HTTP server
   const char* ssid = "your_ssid";
@@ -51,6 +56,7 @@
   
 //global variables
   uint8_t Execute;
+  String WebOutput = "";
 
 //profile parameters
   uint8_t  State[36];

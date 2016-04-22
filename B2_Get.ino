@@ -1,6 +1,12 @@
 //Snowflakes WiFi 
 //  GetProfileRecords()
 //  GetPatternRecord()
+//
+//    Apr2016 Kevin Garton
+//      Version 3
+//        Changed calls to print statements to calls to string
+//        builders, now that the print statements are instead
+//        string builders.
 //  
 //    11Mar2016  Dean Garton 
 //      version 2 
@@ -130,7 +136,7 @@ void GetPatternRecord(void)
         }
 
         //print heading
-        PrintHeading();
+        Serial.print(GetHeading());
       break;
 
       //end of table record
@@ -152,7 +158,7 @@ void GetPatternRecord(void)
           PatternAddress = 0;
 
           //print break line
-          PrintBreakLine();
+          Serial.print(GetBreakLine());
         }
         else
         {
@@ -164,7 +170,7 @@ void GetPatternRecord(void)
           PatternAddress = PatternStartAddress;
 
           //print heading
-          PrintHeading();
+          Serial.print(GetHeading());
         }
       break;
 
