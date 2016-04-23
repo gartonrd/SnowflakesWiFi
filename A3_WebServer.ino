@@ -18,7 +18,7 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 
-String main_page = "<HTML><head><script src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js\"></script><script>$(function(){window.setInterval(get_status, 10);}); function get_status() {var request = new XMLHttpRequest();request.onreadystatechange = function(){if (request.readyState === 4  && request.status === 200){var elt = document.getElementById(\"status\");elt.innerHTML = request.responseText;}};request.open(\"GET\", \"curr\", true);request.send();}</script></head><p id=\"status\">No Status Yet Recieved</p><form method=\"POST\" enctype=\"multipart/form-data\" action=\"upload\"><input type=\"file\" name=\"filename\"><br /><input type=\"submit\" value=\"LET'S DO THIS\"></form></HTML>";
+String main_page = "<HTML><head><script src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js\"></script><script>$(function(){window.setInterval(get_status, 1000);}); function get_status() {var request = new XMLHttpRequest();request.onreadystatechange = function(){if (request.readyState === 4  && request.status === 200){var elt = document.getElementById(\"status\");elt.innerHTML = request.responseText;console.log(request.responseText);}};request.open(\"GET\", \"curr\", true);request.send();}</script></head><form method=\"POST\" enctype=\"multipart/form-data\" action=\"upload\"><input type=\"file\" name=\"filename\"><br /><input type=\"submit\" value=\"Upload pattern\"></form><div class=\"status_container\"><div class=\"status_header\">Recent statuses (most recent at top):</div> </ br><div id=\"status\">No Status Yet Recieved</div></div></HTML>";
 
 // These are used during conversion of ASCII hex to bytes
 unsigned int line_number = 1;
@@ -271,7 +271,12 @@ void HandleUploadRequest()
 void HandleCurrStatus()
 {
   // WebOutput is defined in A0_ESP managed in D0_ReadWrite
-  server.send(200, "text/plain", WebOutput);
+  int j;
+  String output = "";
+  for(j=0; j<WebQueueSize; ++j){
+    output += "<p>" + WebQueue[j] + "</p>";
+  }
+  server.send(200, "text/plain", output);
 }
 
 void StartWebServer(ESP8266WebServer &server)

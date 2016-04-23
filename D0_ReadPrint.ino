@@ -2,7 +2,8 @@
 //  ReadPatternRecord()
 //  GetPatternName()
 //  
-//  WebPrint()
+//  InitializeWebQueue()
+//  WebPrint(String output)
 //
 //  GetCheckHeading()
 //  GetCheckRecord()
@@ -61,10 +62,30 @@ String GetPatternName(void)
   return PatternName;
 }
 
+void InitializeWebQueue(){
+  int j;
+  for(j=0; j<MaxWebQueueSize; ++j){
+    WebQueue[j] = "";
+  }
+}
+
 void WebPrint(String output)
 {
-  WebOutput = output;
-  Serial.print(output);  
+  Serial.print(output);
+
+  if(WebQueueSize >= MaxWebQueueSize)
+  {
+    int j;
+    for(j=MaxWebQueueSize-2; j>=0; --j)
+    {
+      WebQueue[j+1] = WebQueue[j];
+    }
+    WebQueue[0] = output;
+  }
+  else
+  {
+    WebQueue[WebQueueSize++] = output;
+  }
 }
 
 String GetCheckHeading(void)
