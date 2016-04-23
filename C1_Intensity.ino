@@ -38,13 +38,8 @@ return Intensity16;
 
 void WriteTimerIntensityState(uint8_t Index, uint32_t Timer, uint16_t Intensity, uint8_t  State)
 {
-  //set timer
   ProfileTimer[Index] = Timer;
-
-  //set intensity
   WriteIntensity(Index, Intensity);
-  
-  //set state
   ProfileState[Index] = State;
 }
 
@@ -57,17 +52,14 @@ void WriteRampIntensity(uint8_t Index, uint16_t ElapsedTime, uint16_t IntensityM
   uint64_t Intensity64;
   uint16_t Intensity8;
 
-  //get parameters
   ElapsedTime64 = ElapsedTime;
   IntensityMinimum64 = IntensityMinimum;
   Numerator64 = Numerator[ProfileIndex[Index]];
   Denominator64 = Denominator[ProfileIndex[Index]];
 
-  //perform calculation
   Intensity64 = ((Numerator64 * ElapsedTime64 * ElapsedTime64) / Denominator64) + IntensityMinimum64;
   Intensity8 = Intensity64;
 
-  //write intensity to output port
   WriteIntensity(Index, Intensity8);
 }
 

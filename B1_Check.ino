@@ -20,7 +20,6 @@ void CheckFirstRecord(void)
 
   uint32_t Length;
 
-  //read from eeprom
   ReadPatternRecord();
 
   //case per record ID
@@ -48,7 +47,6 @@ void CheckProfileRecords(void)
   uint8_t ProfileNumber;
   uint8_t ProfileSize;
   
-  //read from eeprom
   ReadPatternRecord();
 
   //case per record ID
@@ -63,22 +61,18 @@ void CheckProfileRecords(void)
       //get profile number
       ProfileNumber = PatternRecord[1];
 
-      //print
       Serial.print(GetCheckRecord(Length));
 
-      //check profile number
       ProfileSize = PROFILE_SIZE
       if(ProfileNumber >= ProfileSize)
       {
         ProfileNumberError(ProfileNumber);
       }
 
-      //next
     break;
 
     //pattern record
     case 0x81:
-      //print blank line
       Serial.print("\n");
       
       //next
@@ -96,7 +90,6 @@ void CheckPatternRecords(void)
 {
   uint32_t Length;
   
-  //read from eeprom
   ReadPatternRecord();
 
   //case per record ID
@@ -104,20 +97,19 @@ void CheckPatternRecords(void)
   {
     //pattern record
     case 0x81:
-      //bookkeeping
+
       RecordNumber += 1;
 
       //EEPROM address
       Length = PATTERN_LENGTH;
       PatternAddress += Length;
       
-      //print
       Serial.print(GetCheckRecord(Length));
     break;
 
     //start of pattern record
     case 0x90:
-      //bookkeeping
+
       GetPatternName();
       RecordNumber = 0;
 
@@ -125,7 +117,6 @@ void CheckPatternRecords(void)
       Length = START_OF_PATTERN_LENGTH;
       PatternAddress += Length;
 
-      //print
       Serial.print(GetCheckHeading());
       Serial.print(GetCheckRecord(Length));
       Serial.print('\n');
@@ -136,7 +127,7 @@ void CheckPatternRecords(void)
 
     //end of table record
     case 0x91:
-    //bookkeeping
+
       strcpy(PatternName, "EndTable");
       RecordNumber = 0;
 
@@ -144,12 +135,12 @@ void CheckPatternRecords(void)
       Length = END_OF_TABLE_LENGTH;
       PatternAddress = 0;
 
-      //print
+
       Serial.print(GetCheckHeading());
       Serial.print(GetCheckRecord(Length));
 
-      //next
       Serial.print(GetBreakLine());
+      //next
       PatternState = 5;
     break;
 

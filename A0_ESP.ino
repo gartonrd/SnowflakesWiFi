@@ -99,15 +99,12 @@ void setup()
   Wire.begin(0, 2);        //ESP8266 SDA=0 and SCL=2
   Wire.setClock(400000L);  //400Khz
 
-  //initialize PWM
   InitializePWM();
 
-  //display test pattern
   DisplayTestPattern(1000);
 
   StartWebServer(server);
 
-  //start execution
   //completely interrupt driven from timer
   StartExecution();
 
@@ -124,26 +121,21 @@ void loop()
    //if character typed
   if(Serial.available() > 0)
   { 
-    //get character
+
     CharacterReceived =  Serial.read();
  
-    //if executing
     if(Execute == 1)
     {
-      //stop ececution
       StopExecution();
     }
     else
     {
-      //if W typed
       if(CharacterReceived == 'W')
       {
-          //write test data to EEPROM
           WriteTestData();
       }
       else
       {
-        //start execution
         StartExecution();
       }
     }
@@ -152,16 +144,13 @@ void loop()
 
 void HandleTimerIRQ(void)
 { 
-  //pattern state machine
   PatternStateMachine();
   
   //if pattern state machine is not redefining profiles
   if(PatternState == 6)
   {
-    //profile state machine
     ProfileStateMachines();
   
-    //write all PWM channels
     WriteAllPWM(PWMBuffer, sizeof(PWMBuffer));
   }
 }
@@ -172,10 +161,8 @@ void StartExecution(void)
    //pattern state machine will initialize itself and profile state machines
    PatternState = 0;
   
-  //attach callback function to ticker
   TimerIRQ.attach_ms(10, HandleTimerIRQ);
 
-  //print message
   Serial.println("");
   Serial.println("Execution Started");
   Serial.println("Send any character to stop execution");
@@ -186,22 +173,18 @@ void StartExecution(void)
 
 void StopExecution(void)
 {
-  //detach callback function from ticker
   TimerIRQ.detach();
 
-  //print message
   Serial.println("");
   Serial.println("Execution Stopped");
   Serial.println("Send W to write default pattern");
   Serial.println("Send any other character to start execution");
-  
+
   //change state
   Execute = 0;
 
-  //delay
   delay(10);
 
-  //all off
   AllPWMOff();
 }
 

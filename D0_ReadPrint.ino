@@ -49,14 +49,10 @@ String GetPatternName(void)
   Index = 0;
   while(Index < 8)
   {
-    //copy one character
     PatternName[Index] = PatternRecord[Index+2];
-    
-    //next
     Index += 1;
   }
 
-  //add end of string
   PatternName[8] = '\0';
   return PatternName;
 }
@@ -145,14 +141,13 @@ String GetBreakLine(void)
 
 void PatternStateError(void)
 {
-  //print error message
   Serial.println("");
   Serial.print("BAD PATTERN STATE: ");
   Serial.println(PatternState, HEX);
   Serial.println("");
   
-  //quit
   StopExecution();
+  //quit
   PatternState = 7;
 }
 
@@ -160,24 +155,22 @@ void RecordIDError(void)
 {
   uint32_t Length;
     
-  //print error message
   Serial.println("");
   Serial.print("BAD RECORD ID: ");
 
-  //print record contents
   Length = sizeof(PatternRecord);
   Serial.print(GetRecordContents(Length) + "\n");
   
-  //quit
+
   StopExecution();
+  //quit
   PatternState = 7;
 }
 
 void ProfileNumberError(uint16_t ProfileNumber)
 {
   uint16_t ProfileSize;
-    
-  //print error message
+
   ProfileSize = PROFILE_SIZE;
   Serial.println("");
   Serial.print("BAD PROFILE NUMBER: ");
@@ -187,14 +180,13 @@ void ProfileNumberError(uint16_t ProfileNumber)
   Serial.println(")");
   Serial.println("");
   
-  //quit
   StopExecution();
+  //quit
   PatternState = 7;
 }
 
 void ProfileStateError(uint8_t Index)
 {
-  //print error message
   Serial.println("");
   Serial.print("BAD PROFILE STATE: ");
   Serial.print(ProfileState[Index], HEX);
@@ -203,8 +195,8 @@ void ProfileStateError(uint8_t Index)
   Serial.println(")");
   Serial.println("");
   
-  //quit
   StopExecution();
+  //quit
   PatternState = 7;
 }
 

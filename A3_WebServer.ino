@@ -252,7 +252,6 @@ void HandleUpload()
     Serial.println("Starting execution.");
     StartExecution();
   }
-  
 }
 
 void HandleUploadRequest()

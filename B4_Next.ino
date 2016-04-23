@@ -36,14 +36,10 @@ void NextPattern(void)
     //if profile change requested
     if(ProfileNumber != 0xFF)
     {
-      //set state
       ProfileState[Index] = State[ProfileNumber];
-      
-      //set profile
       ProfileIndex[Index] = ProfileNumber;
     }
 
-    //next
     Index += 1;
   }
 

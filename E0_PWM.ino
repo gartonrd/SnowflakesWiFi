@@ -18,7 +18,7 @@ void InitializePWM(void)
   WritePWMRegister(0x00, 0x10);  //go to sleep
   WritePWMRegister(0xFE, 0x03);  //set prescaler
   WritePWMRegister(0x00, 0x00);  //wake up
-  delayMicroseconds(500);                          //wait for oscillator to stabilize
+  delayMicroseconds(500);        //wait for oscillator to stabilize
 
   //set mode 1 register
   //  clear restart
@@ -35,7 +35,6 @@ void InitializePWM(void)
   //  outputs off when disabled
   WritePWMRegister(0x01, 0x18);
 
-  //all channels off
   AllPWMOff();
 }
 
@@ -72,7 +71,6 @@ void WriteAllPWM(uint8_t *Data, uint32_t Length)
       Index += 1;
     }
 
-    //end transmission
     Wire.endTransmission(); 
 
     //delay at least 4.7 microseconds before next start transmission
@@ -96,7 +94,6 @@ void WritePWMChannel(uint8_t ChannelNumber, uint16_t TimeOn, uint16_t TimeOff)
   Wire.write(U16ToU80(TimeOff));
   Wire.write(U16ToU81(TimeOff));
 
-  //end transmission
   Wire.endTransmission();
 
   //delay at least 4.7 microseconds before next start transmission
@@ -114,7 +111,6 @@ void WritePWMRegister(uint8_t RegisterNumber, uint8_t Value)
   //write one byte of data
   Wire.write(Value);
 
-  //end transmission
   Wire.endTransmission();
 
   //delay at least 4.7 microseconds before next start transmission
@@ -128,10 +124,7 @@ uint8_t ReadPWMregister(uint8_t RegisterNumber)
   //write device address
   Wire.beginTransmission(0x40);
   
-  //write register number
   Wire.write(RegisterNumber);
-
-  //end transmission
   Wire.endTransmission();
 
   //delay at least 4.7 microseconds before next start transmission
@@ -140,13 +133,11 @@ uint8_t ReadPWMregister(uint8_t RegisterNumber)
   //request read from device
   Wire.requestFrom(0x40, 1);
 
-  //get value
   Value = Wire.read();
 
   //delay at least 4.7 microseconds before next start transmission
   delayMicroseconds(5);
 
-  //return value
   return Value;
 }
 
