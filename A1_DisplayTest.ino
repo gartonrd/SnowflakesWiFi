@@ -14,17 +14,14 @@
 
 void DisplayTestPattern(uint16_t Delay)
 {
-  //all off
   AllPWMOff();
 
   //walk pattern
   Walk(Delay);
 
-  //version number
   VersionNumber();
   delay(Delay*2);
 
-  //all off
   AllPWMOff();
 }
 
@@ -32,10 +29,8 @@ void Walk(uint16_t Delay)
 {
   uint8_t Index;
     
-  //channel 0 on
   WritePWMChannel(0, 0x1000, 0x0000);
   
-  //delay
   delay(Delay);
 
   //loop to shift through all outputs
@@ -48,10 +43,8 @@ void Walk(uint16_t Delay)
     //turn next channel on
     WritePWMChannel(Index, 0x1000, 0x0000);
 
-    //delay
     delay(Delay);
 
-    //next
     Index += 1;
   }
 

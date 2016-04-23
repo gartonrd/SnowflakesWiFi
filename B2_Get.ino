@@ -21,7 +21,6 @@ void GetProfileRecords(void)
   EndLoop = 0;
   while(EndLoop == 0)
   {
-    //read from eeprom 
     ReadPatternRecord();
     
     //case per record ID
@@ -36,20 +35,16 @@ void GetProfileRecords(void)
         //get profile number
         ProfileNumber = PatternRecord[1];
   
-        //if profile number is not in range
         ProfileSize = PROFILE_SIZE
         if(ProfileNumber >= ProfileSize)
         {
-          //error
           ProfileNumberError(ProfileNumber);
         }
         else
         {
-          //save profile
           SaveProfile(ProfileNumber);
         }
   
-        //next
         ProfileCount += 1;
         if(ProfileCount >= 12)
         {
@@ -59,7 +54,7 @@ void GetProfileRecords(void)
 
       //pattern record
       case 0x81:
-        //bookkeeping
+
         RecordNumber += 1;
 
         //EEPROM address
@@ -89,7 +84,7 @@ void GetPatternRecord(void)
   EndLoop = 0;
   while(EndLoop == 0)
   {
-    //read from eeprom 
+
     ReadPatternRecord();
     
     //case per record ID
@@ -97,16 +92,14 @@ void GetPatternRecord(void)
     {
       //start of pattern record
       case 0x90:
-        //decrement reps
+
         if(PatternReps > 0)
         {
           PatternReps -= 1;
         }
 
-        //if reps = 0
         if(PatternReps == 0)
         {
-          //bookkeeping
           GetPatternName();
           RecordNumber = 0;
           PatternReps = PatternRecord[1];
@@ -122,55 +115,48 @@ void GetPatternRecord(void)
         else
         {
           //reset for another rep of the same pattern
-          //bookkeeping
           RecordNumber = 0;
 
           //EEPROM address
           PatternAddress = PatternStartAddress;
         }
 
-        //print heading
         Serial.print(GetHeading());
       break;
 
       //end of table record
       case 0x91:
-        //decrement reps
+
         if(PatternReps > 0)
         {
           PatternReps -= 1;
         }
 
-        //if reps = 0
+
         if(PatternReps == 0)
         {
           //wrap to start of table
-          //bookkeeping
           RecordNumber = 0;
           
           //EEPROM address
           PatternAddress = StartTableAddress;
 
-          //print break line
           Serial.print(GetBreakLine());
         }
         else
         {
           //reset for another rep of the same pattern
-          //bookkeeping
           RecordNumber = 0;
 
           //EEPROM address
           PatternAddress = PatternStartAddress;
 
-          //print heading
           Serial.print(GetHeading());
         }
       break;
 
       //pattern record
       case 0x81:
-        //bookkeeping
         RecordNumber += 1;
 
         //EEPROM address

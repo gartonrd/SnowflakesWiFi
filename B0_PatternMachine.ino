@@ -11,7 +11,6 @@
 
 void PatternStateMachine(void)
 {
-  //decrement pattern timer
   if(PatternTimer > 0)
   {
     PatternTimer -= 1;
@@ -78,12 +77,9 @@ void InitializeStateMachines()
 {
   uint8_t Index;
 
-  //initialize pattern state machine variables
-    //execution
     PatternAddress = StartTableAddress;
     PatternTimer = 0;
     
-    //bookkeeping
     RecordNumber = 0;
     PatternReps = 0;
 
@@ -94,13 +90,9 @@ void InitializeStateMachines()
     //set state to do nothing
     ProfileState[Index] = 0x00;
     
-    //set profile to 0
     ProfileIndex[Index] = 0;
-
-    //set profile timer to 0
     ProfileTimer[Index] = 0;
     
-    //next
     Index += 1;
   }
 
