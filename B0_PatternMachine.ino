@@ -80,7 +80,7 @@ void InitializeStateMachines()
 
   //initialize pattern state machine variables
     //execution
-    PatternAddress = 0;
+    PatternAddress = StartTableAddress;
     PatternTimer = 0;
     
     //bookkeeping

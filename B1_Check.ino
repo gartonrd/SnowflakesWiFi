@@ -3,12 +3,6 @@
 //  CheckProfileRecords()
 //  CheckPatternRecords()
 //
-//    Apr2016 Kevin Garton
-//      Version 3
-//        Changed calls to print statements to calls to string
-//        builders, now that the print statements are instead
-//        string builders.
-//
 //    11Mar2016  Dean Garton 
 //      version 2 
 //  
@@ -17,9 +11,8 @@
 
 void CheckFirstRecord(void)
 {
-
   uint32_t Length;
-
+  
   //read from eeprom
   ReadPatternRecord();
 
@@ -29,10 +22,29 @@ void CheckFirstRecord(void)
     //start of pattern record
     case 0x90:
       //print break line
-      Serial.print(GetBreakLine());
+      PrintBreakLine();
         
       //next
       PatternState = 3;
+    break;
+
+    //end of table record
+    case 0x91:
+    //bookkeeping
+      strcpy(PatternName, "EndTable");
+      RecordNumber = 0;
+
+      //EEPROM address
+      Length = END_OF_TABLE_LENGTH;
+      PatternAddress = StartTableAddress;
+
+      //print
+      PrintCheckHeading();
+      PrintCheckRecord(Length);
+
+      //next
+      PrintBreakLine();
+      PatternState = 7;
     break;
 
     //fatal error
@@ -64,7 +76,7 @@ void CheckProfileRecords(void)
       ProfileNumber = PatternRecord[1];
 
       //print
-      Serial.print(GetCheckRecord(Length));
+      PrintCheckRecord(Length);
 
       //check profile number
       ProfileSize = PROFILE_SIZE
@@ -79,7 +91,7 @@ void CheckProfileRecords(void)
     //pattern record
     case 0x81:
       //print blank line
-      Serial.print("\n");
+      PrintNewLine();
       
       //next
       PatternState = 3;
@@ -112,7 +124,7 @@ void CheckPatternRecords(void)
       PatternAddress += Length;
       
       //print
-      Serial.print(GetCheckRecord(Length));
+      PrintCheckRecord(Length);
     break;
 
     //start of pattern record
@@ -126,9 +138,9 @@ void CheckPatternRecords(void)
       PatternAddress += Length;
 
       //print
-      Serial.print(GetCheckHeading());
-      Serial.print(GetCheckRecord(Length));
-      Serial.print('\n');
+      PrintCheckHeading();
+      PrintCheckRecord(Length);
+      PrintNewLine();
 
       //next
       PatternState = 2;
@@ -142,14 +154,14 @@ void CheckPatternRecords(void)
 
       //EEPROM address
       Length = END_OF_TABLE_LENGTH;
-      PatternAddress = 0;
+      PatternAddress = StartTableAddress;
 
       //print
-      Serial.print(GetCheckHeading());
-      Serial.print(GetCheckRecord(Length));
+      PrintCheckHeading();
+      PrintCheckRecord(Length);
 
       //next
-      Serial.print(GetBreakLine());
+      PrintBreakLine();
       PatternState = 5;
     break;
 

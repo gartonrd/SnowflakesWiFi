@@ -8,30 +8,26 @@
 //  GetCheckHeading()
 //  GetCheckRecord()
 //  
-//  GetHeading()
-//  GetRecord()
+//  PrintHeading()
+//  PrintRecord()
 //
-//  GetRecordNumber()
-//  GetRecordContents()
+//  PrintRecordNumber()
+//  PrintRecordContents()
 //
-//  GetNewLine()
-//  GetBreakLine()
+//  PrintNewLine()
+//  PrintBreakLine()
 //
 //  PatternStateError()
 //  RecordIDError()
 //  ProfileNumberError()
 //  ProfileStateError()
-//
-//    Apr2016 Kevin Garton
-//      Version 3
-//        Changed print functions to string generators.
 // 
 //    11Mar2016  Dean Garton
 //      version 2
 //
 //    18Feb2016  Dean Garton
 //      get and print records
-//      
+//           
 
 void ReadPatternRecord(void)
 {
@@ -42,7 +38,16 @@ void ReadPatternRecord(void)
   ReadEeprom(PatternAddress, PatternRecord, Length);
 }
 
-String GetPatternName(void)
+void ReadLogOnRecord(void)
+{
+  uint32_t Length;
+  
+  //read from eeprom
+  Length = sizeof(LogOnRecord);
+  ReadEeprom(LogOnAddress, LogOnRecord, Length);
+}
+
+void GetPatternName(void)
 {
   uint8_t Index;
 
@@ -59,7 +64,6 @@ String GetPatternName(void)
 
   //add end of string
   PatternName[8] = '\0';
-  return PatternName;
 }
 
 void InitializeWebQueue(){
@@ -86,82 +90,164 @@ void WebPrint(String output)
   {
     WebQueue[WebQueueSize++] = output;
   }
-}
 
-String GetCheckHeading(void)
+void PrintExecutionStarted()
 {
-  return "\nPatternName  Record# : RecordContents\n";
+  Serial.println("");
+  Serial.println("EXECUTION STARTED");
 }
 
-String  GetCheckRecord(uint32_t Length)
-{ 
-  String check_record;
-  check_record += PatternName;
-  check_record += "     ";
-  check_record += GetRecordNumber();
-  check_record += "       : ";
-  check_record += GetRecordContents(Length);
-  return check_record;
-}
-
-String GetHeading(void)
+void PrintStartExecutionOptions(void)
 {
-  return "\nPatternName  Reps  Record# : RecordContents\n";
+  Serial.println("Send any character to stop execution");
 }
 
-String  GetRecord(uint32_t Length)
+void PrintExecutionStopped(void)
+{
+  Serial.println("");
+  Serial.println("EXECUTION STOPPED");
+}
+
+void PrintStopExecutionOptions(void)
+{
+  Serial.println("Send L to write logon information ");
+  Serial.println("Send W to write flake test pattern table");
+  Serial.println("Send any other character to start execution");
+}
+
+void PrintWriteTestDataDone()
+{
+  Serial.println("");
+  Serial.println("FLAKE TEST PATTERN TABLE WRITTEN");
+}
+
+void PrintSSIDPrompt(void)
+{
+  Serial.println("");
+  Serial.println("Enter SSID + Newline");
+}
+
+void PrintPasswordPrompt(void)
+{
+  Serial.println("");
+  Serial.println("Enter Password + Newline");
+}
+
+void PrintSSID(void)
+{
+  Serial.print("SSID is: ");
+  Serial.println(ssid);
+}
+
+void PrintPassword(void)
+{
+  Serial.print("Password is: ");
+  Serial.println(password);
+}
+
+void PrintCheckHeading(void)
+{
+  Serial.println("");
+  Serial.println("PatternName  Record# : RecordContents");
+}
+
+void  PrintCheckRecord(uint32_t Length)
 { 
-  String record;
-  record += PatternName;
-  record += "     ";
-  record += PatternReps;
-  record += "     ";
-  record += GetRecordNumber();
-  record += "       : ";
-  record += GetRecordContents(Length);
-  return record;
+  //print info
+  Serial.print(PatternName);
+  Serial.print("     ");
+  PrintRecordNumber();
+  Serial.print("       : ");
+  PrintRecordContents(Length);
 }
 
-String GetRecordNumber()
+void PrintHeading(void)
+{
+  Serial.println("");
+  Serial.println("PatternName  Reps  Record# : RecordContents");
+}
+
+void  PrintRecord(uint32_t Length)
+{ 
+  //print info
+  Serial.print(PatternName);
+  Serial.print("     ");
+  Serial.print(PatternReps);
+  Serial.print("     ");
+  PrintRecordNumber();
+  Serial.print("       : ");
+  PrintRecordContents(Length);
+}
+
+void PrintRecordNumber()
 {
   switch(PatternRecord[0])
   {
      //profile record
     case 0x80:
-      return String(PatternRecord[1]);
+      Serial.print(PatternRecord[1]);
     break;
 
     //pattern record
     case 0x81:
-      return String(RecordNumber);
+      Serial.print(RecordNumber);
     break;
 
     //space
     default:
-      return " ";
+      Serial.print(" ");
     break;
   }
 }
 
-String GetRecordContents(uint32_t Length)
+void PrintRecordContents(uint32_t Length)
 {
   uint16_t Index;
-  String contents;
+  
   //loop to print record contents
   Index = 0;
   while(Index < Length)
   {
-    contents += String(PatternRecord[Index], HEX);
-    contents += " ";
+    Serial.print(PatternRecord[Index], HEX);
+    Serial.print(" ");
     Index += 1;
   }
-  contents += '\n';
-  return contents;
+  Serial.println("");
 }
 
-String GetBreakLine(void)
+void PrintNewLine(void)
 {
-  return "\n==================================\n";
+  Serial.println("");
+}
+
+void PrintBreakLine(void)
+{
+  Serial.println("");
+  Serial.println("==================================");
+}
+
+void LogOnStateError(void)
+{
+  //print error message
+  Serial.println("");
+  Serial.print("BAD LOGON STATE: ");
+  Serial.println(LogOnState, HEX);
+  Serial.println("");
+  
+  //exit
+  LogOnState = 7;
+}
+
+void LogOnLengthError(void)
+{
+  uint8_t Length;
+    
+  //print error message
+  Length = LOGON_LENGTH;
+  Serial.println("");
+  Serial.print("BAD ENTRY, MAXIMUM IS: ");
+  Serial.println(Length);
+  Serial.println("TRY AGAIN");
 }
 
 void PatternStateError(void)
@@ -174,6 +260,7 @@ void PatternStateError(void)
   
   //quit
   StopExecution();
+  PrintStopExecutionOptions();
   PatternState = 7;
 }
 
@@ -187,10 +274,12 @@ void RecordIDError(void)
 
   //print record contents
   Length = sizeof(PatternRecord);
-  Serial.print(GetRecordContents(Length) + "\n");
+  PrintRecordContents(Length);
+  Serial.println("");
   
   //quit
   StopExecution();
+  PrintStopExecutionOptions();
   PatternState = 7;
 }
 
@@ -210,6 +299,7 @@ void ProfileNumberError(uint16_t ProfileNumber)
   
   //quit
   StopExecution();
+  PrintStopExecutionOptions();
   PatternState = 7;
 }
 
@@ -226,6 +316,7 @@ void ProfileStateError(uint8_t Index)
   
   //quit
   StopExecution();
+  PrintStopExecutionOptions();
   PatternState = 7;
 }
 

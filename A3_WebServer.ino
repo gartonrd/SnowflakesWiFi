@@ -1,14 +1,9 @@
 //Snowflakes WiFi
 //  HandleIndex()
-//  AsciiToBytes(uint8_t ascii, int len)
+//  ascii_to_bytes(uint8_t ascii, int len)
 //  HandleUpload()
 //  HandleUploadRequest()
-//  HandleCurrStatus()
 //  StartWebServer()
-//
-//  Apr2016 Kevin Garton
-//    Version 2
-//        Implemented basic record viewer.
 //
 //  Apr2016 Kevin Garton
 //    Version 1
@@ -30,7 +25,7 @@ void HandleIndex()
   server.send(200, "text/html", main_page);
 }
 
-String AsciiToBytes(uint8_t* ascii, int len)
+String ascii_to_bytes(uint8_t* ascii, int len)
 {
 
   int i,j;
@@ -57,95 +52,95 @@ String AsciiToBytes(uint8_t* ascii, int len)
             line_number
           );
         }
-      break;
+        break;
       case '0':
         chars_in_line += 1;
         newchar = newchar| (0x00 << ((chars_in_line % 2)*4));
-      break;
+        break;
       case '1':
         chars_in_line += 1;
         newchar = newchar| (0x01 << ((chars_in_line % 2)*4));
-      break;
+        break;
       case '2':
         chars_in_line += 1;
         newchar = newchar| (0x02 << ((chars_in_line % 2)*4));
-      break;
+        break;
       case '3':
         chars_in_line += 1;
         newchar = newchar| (0x03 << ((chars_in_line % 2)*4));
-      break;
+        break;
       case '4':
         chars_in_line += 1;
         newchar = newchar| (0x04 << ((chars_in_line % 2)*4));
-      break;
+        break;
       case '5':
         chars_in_line += 1;
         newchar = newchar| (0x05 << ((chars_in_line % 2)*4));
-      break;
+        break;
       case '6':
         chars_in_line += 1;
         newchar = newchar| (0x06 << ((chars_in_line % 2)*4));
-      break;
+        break;
       case '7':
         chars_in_line += 1;
         newchar = newchar| (0x07 << ((chars_in_line % 2)*4));
-      break;
+        break;
       case '8':
         chars_in_line += 1;
         newchar = newchar| (0x08 << ((chars_in_line % 2)*4));
-      break;
+        break;
       case '9':
         chars_in_line += 1;
         newchar = newchar| (0x09 << ((chars_in_line % 2)*4));
-      break;
+        break;
       case 'A':
         chars_in_line += 1;
         newchar = newchar| (0x0A << ((chars_in_line % 2)*4));
-      break;
+        break;
       case 'B':
         chars_in_line += 1;
         newchar = newchar| (0x0B << ((chars_in_line % 2)*4));
-      break;
+        break;
       case 'C':
         chars_in_line += 1;
         newchar = newchar| (0x0C << ((chars_in_line % 2)*4));
-      break;
+        break;
       case 'D':
         chars_in_line += 1;
         newchar = newchar| (0x0D << ((chars_in_line % 2)*4));
-      break;
+        break;
       case 'E':
         chars_in_line += 1;
         newchar = newchar| (0x0E << ((chars_in_line % 2)*4));
-      break;
+        break;
       case 'F':
         chars_in_line += 1;
         newchar = newchar| (0x0F << ((chars_in_line % 2)*4));
-      break;
+        break;
       case 'a':
         chars_in_line += 1;
         newchar = newchar| (0x0A << ((chars_in_line % 2)*4));
-      break;
+        break;
       case 'b':
         chars_in_line += 1;
         newchar = newchar| (0x0B << ((chars_in_line % 2)*4));
-      break;
+        break;
       case 'c':
         chars_in_line += 1;
         newchar = newchar| (0x0C << ((chars_in_line % 2)*4));
-      break;
+        break;
       case 'd':
         chars_in_line += 1;
         newchar = newchar| (0x0D << ((chars_in_line % 2)*4));
-      break;
+        break;
       case 'e':
         chars_in_line += 1;
         newchar = newchar| (0x0E << ((chars_in_line % 2)*4));
-      break;
+        break;
       case 'f':
         chars_in_line += 1;
         newchar = newchar| (0x0F << ((chars_in_line % 2)*4));
-      break;
+        break;
       case '\n':
         if(chars_in_line % 2 == 1)
         {
@@ -157,7 +152,7 @@ String AsciiToBytes(uint8_t* ascii, int len)
         }
         line_number += 1;
         chars_in_line = 0;
-      break;
+        break;
       case ' ':
         // Whitespace; ignore.
         continue;
@@ -176,7 +171,7 @@ String AsciiToBytes(uint8_t* ascii, int len)
           ascii[j],
           line_number
         );
-      break;
+        break;
     }
     if(chars_in_line % 2 == 0 && chars_in_line > 0)
     {
@@ -198,7 +193,7 @@ void HandleUpload()
   {
     Serial.println("Stopping execution for upload.");
     StopExecution();
-    uploaded_bytes = 0;
+    uploaded_bytes = StartTableAddress;
   }
   else if(upload.status == UPLOAD_FILE_WRITE)
   {
@@ -209,7 +204,7 @@ void HandleUpload()
       upload.currentSize,
       upload.totalSize
     );
-    String data = AsciiToBytes(
+    String data = ascii_to_bytes(
       upload.buf,
       upload.currentSize
     );
@@ -250,7 +245,7 @@ void HandleUpload()
     );
     Serial.printf(
       "Total pattern size after conversion: %d\n",
-      uploaded_bytes
+      (uploaded_bytes - StartTableAddress)
     );
     Serial.println("Starting execution.");
     StartExecution();
@@ -287,36 +282,21 @@ void StartWebServer(ESP8266WebServer &server)
   // ensure we're in station mode
   WiFi.mode(WIFI_STA);
 
-  Serial.print("Connecting to network");
+  Serial.print("Connecting to network...");
   WiFi.begin(ssid, password);
 
-  int attempts = 0;
-  int max_attempts = 50;
-  int attempt_delay = 500; // milliseconds
   while (WiFi.status() != WL_CONNECTED)
   {
-      if(attempts >= max_attempts)
-      {
-        Serial.printf(
-          "\nGave up after %d attempts (~%ds). Are the SSID and password correct?\n",
-          max_attempts,
-          (max_attempts * attempt_delay) / 1000
-        );
-        Serial.print("Failed to start HTTP server.\n");
-        return;
-      }
-      delay(attempt_delay);
+      delay(500);
       Serial.print(".");
-      ++attempts;
   }
-  Serial.println("Connected.");
+  Serial.println("CONNECTED");
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
 
   // URL dispatching
   server.on("/", HTTP_GET, HandleIndex);
   server.on("/upload", HTTP_POST, HandleUploadRequest, HandleUpload);
-  server.on("/curr", HTTP_GET, HandleCurrStatus);
 
   // start server
   server.begin();

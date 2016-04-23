@@ -7,11 +7,6 @@
 //  StopExecution()
 //
 //    Apr2016 Kevin Garton
-//      version 4
-//        Added initial implementation of record viewer in 
-//        A3_WebServer, requiring overhauls to D0_ReadPrint.
-//
-//    Apr2016 Kevin Garton
 //      version 3
 //        implement HTTP server for uploading
 //        patterns in ASCII hex to EEPROM
@@ -26,16 +21,11 @@
 //        do not turn all displays off with start of new pattern
 //        show record number in decimal, not alpha
 //
-//
 //    18Feb2016  Dean Garton
 //      display patterns per tables in EEPROM
 
 //version number
   #define VERSION 0x0005
-
-//login information for HTTP server
-  const char* ssid = "your_ssid";
-  const char* password = "your_password";
 
 //includes
   #include <Wire.h>
@@ -49,6 +39,7 @@
   #define PATTERN_LENGTH 19;           //also change in PatternRecord[] below
   #define END_OF_TABLE_LENGTH 1;
   #define PROFILE_SIZE 36;             //also change in profile parameters[] below
+  #define LOGON_LENGTH 25;             //also change in LogonRecord, ssid, and password below
 
 //objects
   Ticker TimerIRQ;
@@ -72,6 +63,18 @@
   uint16_t BlinkDelayTime[36];
   uint16_t BlinkOnTime[36];
   uint16_t BlinkOffTime[36];
+
+//logon state machine
+  //execution
+    uint8_t  LogOnState;
+    uint32_t LogOnAddress;
+  //bookkeeping
+    uint32_t StartTableAddress;
+    uint8_t LogOnIndex;
+  //buffers
+    uint8_t LogOnRecord[27];  //LOGON_LENGTH + RecordID + EndOfTable
+    char ssid[26];            //LOGON_LENGTH + RecordID
+    char password[26];        //LOGON_LENGTH + RecordID
 
 //pattern state machine
   //execution
@@ -109,49 +112,74 @@ void setup()
   //initialize PWM
   InitializePWM();
 
-  //display test pattern
-  DisplayTestPattern(1000);
-
+  //get logon information
+  LogOnState = 0;
+  LogOnStateMachine();
+  
   StartWebServer(server);
+
+  //display test pattern
+  DisplayTestPattern(1000);  
 
   //start execution
   //completely interrupt driven from timer
   StartExecution();
-
+  PrintStartExecutionOptions();
 }
 
 void loop()
 { 
   char CharacterReceived;
 
-
   // Check for activity on HTTP server
   server.handleClient();
   
-   //if character typed
+  //if character typed
   if(Serial.available() > 0)
   { 
     //get character
-    CharacterReceived =  Serial.read();
- 
+    CharacterReceived = Serial.read();
+
+    //wait for any more characters to arrive
+    delay(10);
+    
+    //dump any other characters typed
+    while(Serial.available() > 0)
+    { 
+      //get character
+      Serial.read();
+    }
+
     //if executing
     if(Execute == 1)
     {
       //stop ececution
       StopExecution();
+      PrintStopExecutionOptions();
     }
     else
     {
-      //if W typed
-      if(CharacterReceived == 'W')
+      //case per character typed
+      switch(CharacterReceived)
       {
-          //write test data to EEPROM
+        //write flake test patterns to EEPROM
+        case 'W':
           WriteTestData();
-      }
-      else
-      {
+          PrintStopExecutionOptions();
+        break;
+
+        //write logon information to EEPROM
+        case 'L':
+          LogOnState = 1;
+          LogOnStateMachine();
+          PrintStopExecutionOptions();
+        break;
+    
         //start execution
-        StartExecution();
+        default:
+          StartExecution();
+          PrintStartExecutionOptions();
+        break;
       }
     }
   }
@@ -183,9 +211,7 @@ void StartExecution(void)
   TimerIRQ.attach_ms(10, HandleTimerIRQ);
 
   //print message
-  Serial.println("");
-  Serial.println("Execution Started");
-  Serial.println("Send any character to stop execution");
+  PrintExecutionStarted();
 
   //change state
   Execute = 1;
@@ -197,10 +223,7 @@ void StopExecution(void)
   TimerIRQ.detach();
 
   //print message
-  Serial.println("");
-  Serial.println("Execution Stopped");
-  Serial.println("Send W to write default pattern");
-  Serial.println("Send any other character to start execution");
+  PrintExecutionStopped();
   
   //change state
   Execute = 0;
