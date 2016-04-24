@@ -1,12 +1,8 @@
-//Snowflakes WiFi 
-//  ProfileStateMachines()
-//  ExecuteProfileStateMachine()
-//     
-//    11Mar2016  Dean Garton 
-//      version 2 
-//  
-//    18Feb2016  Dean Garton
-//      Execute profile for each snowflake
+/********************************************************
+Snowflakes WiFi 
+  C0_ProfileMachines
+    Execute profile for each snowflake
+********************************************************/
 
 void ProfileStateMachines(void)
 {

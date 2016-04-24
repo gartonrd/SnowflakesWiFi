@@ -1,8 +1,8 @@
-//Snowflakes WiFi
-//  SaveProfile() 
-//  
-//    11Mar2016  Dean Garton 
-//      save profile record in RAM
+/********************************************************
+Snowflakes WiFi 
+  B3_SaveProfile
+    save profile record in RAM
+********************************************************/
   
 void SaveProfile(uint8_t ProfileNumber8)
 {

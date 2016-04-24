@@ -1,36 +1,9 @@
-//Snowflakes WiFi 
-//  ReadPatternRecord()
-//  GetPatternName()
-//  
-//  WebPrint()
-//
-//  GetCheckHeading()
-//  GetCheckRecord()
-//  
-//  GetHeading()
-//  GetRecord()
-//
-//  GetRecordNumber()
-//  GetRecordContents()
-//
-//  GetNewLine()
-//  GetBreakLine()
-//
-//  PatternStateError()
-//  RecordIDError()
-//  ProfileNumberError()
-//  ProfileStateError()
-//
-//    Apr2016 Kevin Garton
-//      Version 3
-//        Changed print functions to string generators.
-// 
-//    11Mar2016  Dean Garton
-//      version 2
-//
-//    18Feb2016  Dean Garton
-//      get and print records
-//      
+/********************************************************
+Snowflakes WiFi 
+  D0_ReadPrint
+    utilities to read records from EEPROM
+    utilities to print messages to the serial port
+********************************************************/ 
 
 void ReadPatternRecord(void)
 {

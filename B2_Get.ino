@@ -1,18 +1,8 @@
-//Snowflakes WiFi 
-//  GetProfileRecords()
-//  GetPatternRecord()
-//
-//    Apr2016 Kevin Garton
-//      Version 3
-//        Changed calls to print statements to calls to string
-//        builders, now that the print statements are instead
-//        string builders.
-//  
-//    11Mar2016  Dean Garton 
-//      version 2 
-//  
-//    18Feb2016  Dean Garton
-//      get records from the table
+/********************************************************
+Snowflakes WiFi 
+  B2_Get
+    get cases for the pattern state machine
+********************************************************/
 
 void GetProfileRecords(void)
 {

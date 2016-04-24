@@ -1,13 +1,8 @@
-//Snowflakes WiFi 
-//  PatternStateMachine()
-//  InitializeStateMachines()
-// 
-//    11Mar2016  Dean Garton
-//      version 2
-//  
-//    18Feb2016  Dean Garton
-//      Check the EEPROM tables
-//      Execute the pattern records
+/********************************************************
+Snowflakes WiFi 
+  B0_PatternMachine
+    Execute the pattern records
+********************************************************/
 
 void PatternStateMachine(void)
 {

@@ -1,12 +1,10 @@
-//Snowflakes WiFi 
-//  U16 consists of U81, U80
-//  U32 consists of U83, U82, U81, U80
-//  
-//    11Mar2016  Dean Garton 
-//      version 2 
-//  
-//    18Feb2016  Dean Garton
-//      pack / unpack 8 bit bytes from 16 and 32 bit words
+/********************************************************
+Snowflakes WiFi 
+  E2_UToU
+    utilities to pack / unpack 8 bit bytes from 16 and 32 bit words
+      U16 consists of U81, U80
+      U32 consists of U83, U82, U81, U80
+********************************************************/
 
 //16 bit pack
 uint16_t U8ToU16(uint8_t U81, uint8_t U80)
