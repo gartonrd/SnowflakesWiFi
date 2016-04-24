@@ -31,7 +31,7 @@
 //      display patterns per tables in EEPROM
 
 //version number
-  #define VERSION 0x0004
+  #define VERSION 0x0005
 
 //login information for HTTP server
   const char* ssid = "your_ssid";
@@ -56,7 +56,11 @@
   
 //global variables
   uint8_t Execute;
-  String WebOutput = "";
+
+// Used to report to the browser; see D0_ReadPrint
+  const int MaxWebQueueSize = 10;
+  int WebQueueSize = 0;
+  String WebQueue[MaxWebQueueSize];
 
 //profile parameters
   uint8_t  State[36];
@@ -98,6 +102,9 @@ void setup()
   Serial.begin(115200);
   Wire.begin(0, 2);        //ESP8266 SDA=0 and SCL=2
   Wire.setClock(400000L);  //400Khz
+
+  // See D0_ReadPrint
+  InitializeWebQueue();
 
   //initialize PWM
   InitializePWM();
