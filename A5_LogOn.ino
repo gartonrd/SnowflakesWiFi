@@ -13,7 +13,7 @@ void CheckSSID(void)
   LogOnAddress = 0;
 
   //print break line
-  PrintBreakLine();
+  Serial.print(GetBreakLine());
   
   //read from eeprom
   ReadLogOnRecord();

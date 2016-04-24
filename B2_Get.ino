@@ -130,7 +130,7 @@ void GetPatternRecord(void)
         }
 
         //print heading
-        PrintHeading();
+        Serial.print(GetHeading());
       break;
 
       //end of table record
@@ -152,7 +152,7 @@ void GetPatternRecord(void)
           PatternAddress = StartTableAddress;
 
           //print break line
-          PrintBreakLine();
+          Serial.print(GetBreakLine());
         }
         else
         {
@@ -164,7 +164,7 @@ void GetPatternRecord(void)
           PatternAddress = PatternStartAddress;
 
           //print heading
-          PrintHeading();
+          Serial.print(GetHeading());
         }
       break;
 

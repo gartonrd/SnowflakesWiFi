@@ -134,10 +134,14 @@ void PrintSSIDPrompt(void)
 
 void PrintPasswordPrompt(void)
 {
-  WebOutput = output;
   Serial.println("");
-  Serial.print(output);  
   Serial.println("Enter Password + Newline");
+}
+
+void PrintPassword(void)
+{
+  Serial.print("Password is: ");
+  Serial.println(password);
 }
 
 void PrintSSID(void)
@@ -256,6 +260,7 @@ void PatternStateError(void)
   
   //quit
   StopExecution();
+  PrintStopExecutionOptions();
   PatternState = 7;
 }
 
@@ -273,6 +278,7 @@ void RecordIDError(void)
   
   //quit
   StopExecution();
+  PrintStopExecutionOptions();
   PatternState = 7;
 }
 
@@ -292,6 +298,7 @@ void ProfileNumberError(uint16_t ProfileNumber)
   
   //quit
   StopExecution();
+  PrintStopExecutionOptions();
   PatternState = 7;
 }
 
@@ -308,6 +315,7 @@ void ProfileStateError(uint8_t Index)
   
   //quit
   StopExecution();
+  PrintStopExecutionOptions();
   PatternState = 7;
 }
 
