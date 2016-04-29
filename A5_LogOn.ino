@@ -42,7 +42,7 @@ void PromptSSID(void)
   LogOnRecord[0] = 0x82;
   
   //prompt for ssid
-  PrintSSIDPrompt();
+  Serial.print(GetSSIDPrompt());
   
   //next
   LogOnState = 2;
@@ -74,7 +74,7 @@ void SetSSID(void)
         WriteEeprom(LogOnAddress, LogOnRecord, Length+2);
         
         //print SSID
-        PrintSSID();
+        Serial.print(GetSsidDisplay());
         
         //next
         LogOnAddress += Length+2;
@@ -122,7 +122,7 @@ void PromptPassword(void)
   LogOnRecord[0] = 0x83;
   
   //prompt for password
-  PrintPasswordPrompt();
+  Serial.print(GetPasswordPrompt());
   
   //next
   LogOnState = 4;
@@ -154,7 +154,7 @@ void SetPassword(void)
         WriteEeprom(LogOnAddress, LogOnRecord, Length+2);
 
         //print password
-        PrintPassword();
+        Serial.print(GetPasswordDisplay());
         
         //next
         LogOnAddress += Length+2;
@@ -217,7 +217,7 @@ void GetSSID(void)
         ssid[LogOnIndex] = Character;
         
         //print SSID
-        PrintSSID();
+        Serial.print(GetSsidDisplay());
         
         //next
         LogOnAddress += Length+2;
@@ -264,7 +264,7 @@ void GetPassword(void)
         password[LogOnIndex] = Character;
         
         //print Password
-        PrintPassword();
+        Serial.print(GetPasswordDisplay());
         
         //next
         LogOnAddress += Length+2;

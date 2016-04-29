@@ -96,58 +96,58 @@ void WebPrint(String output)
   }
 }
 
-void PrintExecutionStarted()
+String GetExecutionStartedDisplay()
 {
-  Serial.println("");
-  Serial.println("EXECUTION STARTED");
+  return "\nEXECUTION STARTED\n";
 }
 
-void PrintStartExecutionOptions(void)
+String GetStartExecutionOptions()
 {
-  Serial.println("Send any character to stop execution");
+  return "Send any character to stop execution\n";
 }
 
-void PrintExecutionStopped(void)
+String GetExecutionStoppedDisplay()
 {
-  Serial.println("");
-  Serial.println("EXECUTION STOPPED");
+  return "\nEXECUTION STOPPED\n";
 }
 
-void PrintStopExecutionOptions(void)
+String GetStopExecutionOptions(void)
 {
-  Serial.println("Send L to write logon information ");
-  Serial.println("Send W to write flake test pattern table");
-  Serial.println("Send any other character to start execution");
+  String returner = "Send L to write logon information \n";
+  returner += "Send W to write flake test pattern table\n";
+  returner += "Send any other character to start execution\n";
+  return returner;
 }
 
-void PrintWriteTestDataDone()
+String GetWriteTestDataDone()
 {
-  Serial.println("");
-  Serial.println("FLAKE TEST PATTERN TABLE WRITTEN");
+  return "\nFLAKE TEST PATTERN TABLE WRITTEN\n";
 }
 
-void PrintSSIDPrompt(void)
+String GetSSIDPrompt(void)
 {
-  Serial.println("");
-  Serial.println("Enter SSID + Newline");
+  return "\nEnter SSID + Newline\n";
 }
 
-void PrintPasswordPrompt(void)
+String GetPasswordDisplay()
 {
-  Serial.println("");
-  Serial.println("Enter Password + Newline");
+  String returner = "\nPassword is: ";
+  returner += password;
+  returner += '\n';
+  return returner;
 }
 
-void PrintPassword(void)
+String GetPasswordPrompt(void)
 {
-  Serial.print("Password is: ");
-  Serial.println(password);
+  return "Enter Password + Newline\n";
 }
 
-void PrintSSID(void)
+String GetSsidDisplay(void)
 {
-  Serial.print("SSID is: ");
-  Serial.println(ssid);
+  String returner = "SSID is: ";
+  returner += String(ssid);
+  returner += '\n';
+  return returner;
 }
 
 String GetCheckHeading(void)
@@ -260,7 +260,7 @@ void PatternStateError(void)
   
   //quit
   StopExecution();
-  PrintStopExecutionOptions();
+  GetStopExecutionOptions();
   PatternState = 7;
 }
 
@@ -278,7 +278,7 @@ void RecordIDError(void)
   
   //quit
   StopExecution();
-  PrintStopExecutionOptions();
+  GetStopExecutionOptions();
   PatternState = 7;
 }
 
@@ -298,7 +298,7 @@ void ProfileNumberError(uint16_t ProfileNumber)
   
   //quit
   StopExecution();
-  PrintStopExecutionOptions();
+  GetStopExecutionOptions();
   PatternState = 7;
 }
 
@@ -315,7 +315,7 @@ void ProfileStateError(uint8_t Index)
   
   //quit
   StopExecution();
-  PrintStopExecutionOptions();
+  GetStopExecutionOptions();
   PatternState = 7;
 }
 

@@ -275,7 +275,7 @@ void WriteTestData(void)
   }
 
   //print message
-  PrintWriteTestDataDone(); 
+  Serial.print(GetWriteTestDataDone());
 }
 //=============================================================================================================
 

@@ -124,7 +124,7 @@ void setup()
   //start execution
   //completely interrupt driven from timer
   StartExecution();
-  PrintStartExecutionOptions();
+  Serial.print(GetStartExecutionOptions());
 }
 
 void loop()
@@ -155,7 +155,7 @@ void loop()
     {
       //stop ececution
       StopExecution();
-      PrintStopExecutionOptions();
+      Serial.print(GetStopExecutionOptions());
     }
     else
     {
@@ -165,20 +165,20 @@ void loop()
         //write flake test patterns to EEPROM
         case 'W':
           WriteTestData();
-          PrintStopExecutionOptions();
+          Serial.print(GetStopExecutionOptions());
         break;
 
         //write logon information to EEPROM
         case 'L':
           LogOnState = 1;
           LogOnStateMachine();
-          PrintStopExecutionOptions();
+          Serial.print(GetStopExecutionOptions());
         break;
     
         //start execution
         default:
           StartExecution();
-          PrintStartExecutionOptions();
+          Serial.print(GetStartExecutionOptions());
         break;
       }
     }
@@ -211,7 +211,7 @@ void StartExecution(void)
   TimerIRQ.attach_ms(10, HandleTimerIRQ);
 
   //print message
-  PrintExecutionStarted();
+  Serial.print(GetExecutionStartedDisplay());
 
   //change state
   Execute = 1;
@@ -223,7 +223,7 @@ void StopExecution(void)
   TimerIRQ.detach();
 
   //print message
-  PrintExecutionStopped();
+  Serial.print(GetExecutionStoppedDisplay());
   
   //change state
   Execute = 0;
