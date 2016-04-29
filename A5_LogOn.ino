@@ -1,8 +1,7 @@
 /********************************************************
 Snowflakes WiFi 
   A5_LogOn
-  
-  Logon cases
+    Logon cases
 ********************************************************/
 
 void CheckSSID(void)
@@ -55,6 +54,7 @@ void SetSSID(void)
   uint8_t Length;
 
   //if there is another character
+  Length = LOGON_LENGTH;
   if(Serial.available() > 0)
   { 
     //get character
@@ -66,22 +66,24 @@ void SetSSID(void)
       case '\n':
         //terminate ssid string
         ssid[LogOnIndex] = '\0';
+
+        //terminate ssid string in record
+        LogOnRecord[LogOnIndex+1] = '\0';
         
         //save ssid record in EEPROM
-        WriteEeprom(LogOnAddress, LogOnRecord, LogOnIndex+1);
+        WriteEeprom(LogOnAddress, LogOnRecord, Length+2);
         
         //print SSID
         PrintSSID();
         
         //next
-        LogOnAddress += LogOnIndex+1;
+        LogOnAddress += Length+2;
         LogOnState = 3;
       break;
       
       //ssid character
       default:
         //if buffer is not full
-        Length = LOGON_LENGTH;
         if(LogOnIndex < Length)
         {
           //save character in ssid string
@@ -132,6 +134,7 @@ void SetPassword(void)
   uint8_t Length;
 
   //if there is another character
+  Length = LOGON_LENGTH;
   if(Serial.available() > 0)
   { 
     //get character
@@ -144,17 +147,17 @@ void SetPassword(void)
         //terminate password string
         password[LogOnIndex] = '\0';
 
-        //add end of table record
-        LogOnRecord[LogOnIndex+1] = 0x91;
+        //terminate password string in record
+        LogOnRecord[LogOnIndex+1] = '\0';
         
         //save password record in EEPROM
-        WriteEeprom(LogOnAddress, LogOnRecord, LogOnIndex+2);
+        WriteEeprom(LogOnAddress, LogOnRecord, Length+2);
 
         //print password
         PrintPassword();
         
         //next
-        LogOnAddress += LogOnIndex+1;
+        LogOnAddress += Length+2;
         StartTableAddress = LogOnAddress;
         LogOnState = 7;
       break;
@@ -162,7 +165,6 @@ void SetPassword(void)
       //password character
       default:
         //if buffer is not full
-        Length = LOGON_LENGTH;
         if(LogOnIndex < Length)
         {
           //save character in password string
@@ -201,7 +203,7 @@ void GetSSID(void)
 
   //if buffer is not empty
   Length = LOGON_LENGTH;
-  if(LogOnIndex < Length)
+  if(LogOnIndex <= Length)
   {  
     //get next character
     Character = LogOnRecord[LogOnIndex+1];
@@ -209,16 +211,16 @@ void GetSSID(void)
     //cases per character
     switch(Character)
     {
-      //password record ID
-      case 0x83:
-        //terminate ssid string
-        ssid[LogOnIndex] = '\0';
+      //end of string
+      case '\0':
+        //save character in ssid string
+        ssid[LogOnIndex] = Character;
         
         //print SSID
         PrintSSID();
         
         //next
-        LogOnAddress += LogOnIndex+1;
+        LogOnAddress += Length+2;
         ReadLogOnRecord();
         LogOnIndex = 0;
         LogOnState = 6;
@@ -248,7 +250,7 @@ void GetPassword(void)
 
   //if buffer is not empty
   Length = LOGON_LENGTH;
-  if(LogOnIndex < Length)
+  if(LogOnIndex <= Length)
   {  
     //get next character
     Character = LogOnRecord[LogOnIndex+1];
@@ -256,30 +258,16 @@ void GetPassword(void)
     //cases per character
     switch(Character)
     {
-      //start of pattern record ID
-      case 0x90:
-        //terminate password string
-        password[LogOnIndex] = '\0';
+      //end of string
+      case '\0':
+        //save character in password string
+        password[LogOnIndex] = Character;
         
         //print Password
         PrintPassword();
         
         //next
-        LogOnAddress += LogOnIndex+1;
-        StartTableAddress = LogOnAddress;
-        LogOnState = 7;
-      break;
-
-      //end of table record ID
-      case 0x91:
-        //terminate password string
-        password[LogOnIndex] = '\0';
-        
-        //print Password
-        PrintPassword();
-        
-        //next
-        LogOnAddress += LogOnIndex+1;
+        LogOnAddress += Length+2;
         StartTableAddress = LogOnAddress;
         LogOnState = 7;
       break;

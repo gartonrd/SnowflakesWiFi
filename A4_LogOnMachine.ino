@@ -1,12 +1,11 @@
 /********************************************************
 Snowflakes WiFi 
   A4_LogOnMachine
-
-  if (logon info exists in EEPROM)
-    get logon info from EEPROM
-  else
-    prompt user for logon info and save in EEPROM
-  endif
+    if (logon info exists in EEPROM)
+      get logon info from EEPROM
+    else
+      prompt user for logon info and save in EEPROM
+    endif
 ********************************************************/
 
 void LogOnStateMachine(void)

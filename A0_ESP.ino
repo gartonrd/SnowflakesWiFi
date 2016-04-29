@@ -25,7 +25,7 @@
 //      display patterns per tables in EEPROM
 
 //version number
-  #define VERSION 0x0005
+  #define VERSION 0x0006
 
 //includes
   #include <Wire.h>
@@ -39,7 +39,7 @@
   #define PATTERN_LENGTH 19;           //also change in PatternRecord[] below
   #define END_OF_TABLE_LENGTH 1;
   #define PROFILE_SIZE 36;             //also change in profile parameters[] below
-  #define LOGON_LENGTH 25;             //also change in LogonRecord, ssid, and password below
+  #define LOGON_LENGTH 50;             //also change in LogonRecord, ssid, and password below
 
 //objects
   Ticker TimerIRQ;
@@ -72,9 +72,9 @@
     uint32_t StartTableAddress;
     uint8_t LogOnIndex;
   //buffers
-    uint8_t LogOnRecord[27];  //LOGON_LENGTH + RecordID + EndOfTable
-    char ssid[26];            //LOGON_LENGTH + RecordID
-    char password[26];        //LOGON_LENGTH + RecordID
+    uint8_t LogOnRecord[52];  //LOGON_LENGTH + RecordID + EndOfString
+    char ssid[51];            //LOGON_LENGTH + EndOfString
+    char password[51];        //LOGON_LENGTH + EndOfString
 
 //pattern state machine
   //execution
