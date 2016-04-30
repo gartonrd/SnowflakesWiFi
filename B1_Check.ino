@@ -3,12 +3,6 @@
 //  CheckProfileRecords()
 //  CheckPatternRecords()
 //
-//    Apr2016 Kevin Garton
-//      Version 3
-//        Changed calls to print statements to calls to string
-//        builders, now that the print statements are instead
-//        string builders.
-//
 //    11Mar2016  Dean Garton 
 //      version 2 
 //  
@@ -17,9 +11,8 @@
 
 void CheckFirstRecord(void)
 {
-
   uint32_t Length;
-
+  
   //read from eeprom
   ReadPatternRecord();
 
@@ -30,9 +23,28 @@ void CheckFirstRecord(void)
     case 0x90:
       //print break line
       Serial.print(GetBreakLine());
-        
+
       //next
       PatternState = 3;
+    break;
+
+    //end of table record
+    case 0x91:
+    //bookkeeping
+      strcpy(PatternName, "EndTable");
+      RecordNumber = 0;
+
+      //EEPROM address
+      Length = END_OF_TABLE_LENGTH;
+      PatternAddress = StartTableAddress;
+
+      //print
+      Serial.print(GetCheckHeading());
+      Serial.print(GetCheckRecord(Length));
+
+      //next
+      Serial.print(GetBreakLine());
+      PatternState = 7;
     break;
 
     //fatal error
@@ -78,8 +90,7 @@ void CheckProfileRecords(void)
 
     //pattern record
     case 0x81:
-      //print blank line
-      Serial.print("\n");
+      Serial.print('\n');
       
       //next
       PatternState = 3;
@@ -142,7 +153,7 @@ void CheckPatternRecords(void)
 
       //EEPROM address
       Length = END_OF_TABLE_LENGTH;
-      PatternAddress = 0;
+      PatternAddress = StartTableAddress;
 
       //print
       Serial.print(GetCheckHeading());

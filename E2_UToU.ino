@@ -76,4 +76,3 @@ uint8_t U32ToU80(uint32_t U32)
   return (uint8_t)U32;
 }
 
-

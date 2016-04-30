@@ -42,6 +42,14 @@ void ReadPatternRecord(void)
   ReadEeprom(PatternAddress, PatternRecord, Length);
 }
 
+void ReadLogOnRecord(void)
+{
+  uint32_t Length;
+  
+  Length = sizeof(LogOnRecord);
+  ReadEeprom(LogOnAddress, LogOnRecord, Length);
+}
+
 String GetPatternName(void)
 {
   uint8_t Index;
@@ -86,6 +94,60 @@ void WebPrint(String output)
   {
     WebQueue[WebQueueSize++] = output;
   }
+}
+
+String GetExecutionStartedDisplay()
+{
+  return "\nEXECUTION STARTED\n";
+}
+
+String GetStartExecutionOptions()
+{
+  return "Send any character to stop execution\n";
+}
+
+String GetExecutionStoppedDisplay()
+{
+  return "\nEXECUTION STOPPED\n";
+}
+
+String GetStopExecutionOptions(void)
+{
+  String returner = "Send L to write logon information \n";
+  returner += "Send W to write flake test pattern table\n";
+  returner += "Send any other character to start execution\n";
+  return returner;
+}
+
+String GetWriteTestDataDone()
+{
+  return "\nFLAKE TEST PATTERN TABLE WRITTEN\n";
+}
+
+String GetSSIDPrompt(void)
+{
+  return "\nEnter SSID + Newline\n";
+}
+
+String GetPasswordDisplay()
+{
+  String returner = "\nPassword is: ";
+  returner += password;
+  returner += '\n';
+  return returner;
+}
+
+String GetPasswordPrompt(void)
+{
+  return "Enter Password + Newline\n";
+}
+
+String GetSsidDisplay(void)
+{
+  String returner = "SSID is: ";
+  returner += String(ssid);
+  returner += '\n';
+  return returner;
 }
 
 String GetCheckHeading(void)
@@ -164,6 +226,30 @@ String GetBreakLine(void)
   return "\n==================================\n";
 }
 
+void LogOnStateError(void)
+{
+  //print error message
+  Serial.println("");
+  Serial.print("BAD LOGON STATE: ");
+  Serial.println(LogOnState, HEX);
+  Serial.println("");
+  
+  //exit
+  LogOnState = 7;
+}
+
+void LogOnLengthError(void)
+{
+  uint8_t Length;
+    
+  //print error message
+  Length = LOGON_LENGTH;
+  Serial.println("");
+  Serial.print("BAD ENTRY, MAXIMUM IS: ");
+  Serial.println(Length);
+  Serial.println("TRY AGAIN");
+ }
+
 void PatternStateError(void)
 {
   //print error message
@@ -174,6 +260,7 @@ void PatternStateError(void)
   
   //quit
   StopExecution();
+  GetStopExecutionOptions();
   PatternState = 7;
 }
 
@@ -191,6 +278,7 @@ void RecordIDError(void)
   
   //quit
   StopExecution();
+  GetStopExecutionOptions();
   PatternState = 7;
 }
 
@@ -210,6 +298,7 @@ void ProfileNumberError(uint16_t ProfileNumber)
   
   //quit
   StopExecution();
+  GetStopExecutionOptions();
   PatternState = 7;
 }
 
@@ -226,7 +315,7 @@ void ProfileStateError(uint8_t Index)
   
   //quit
   StopExecution();
+  GetStopExecutionOptions();
   PatternState = 7;
 }
-
 

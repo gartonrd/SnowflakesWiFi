@@ -263,7 +263,7 @@ void WriteTestData(void)
   
   //loop to initialize tables
   Index = 0;
-  WriteAddress = 0;
+  WriteAddress = StartTableAddress;
   while(Index < (sizeof(Data)) / (sizeof(uint8_t *)))
   {
     // write to EEPROM
@@ -275,8 +275,7 @@ void WriteTestData(void)
   }
 
   //print message
-  Serial.println("");
-  Serial.println("default pattern written");
+  Serial.print(GetWriteTestDataDone());
 }
 //=============================================================================================================
 

@@ -198,7 +198,7 @@ void HandleUpload()
   {
     Serial.println("Stopping execution for upload.");
     StopExecution();
-    uploaded_bytes = 0;
+    uploaded_bytes = StartTableAddress;
   }
   else if(upload.status == UPLOAD_FILE_WRITE)
   {
@@ -230,7 +230,7 @@ void HandleUpload()
 
     Serial.printf(
       "Writing to EEPROM index %d...",
-      uploaded_bytes
+      (uploaded_bytes - StartTableAddress)
     );
 
     WriteEeprom(
@@ -255,7 +255,6 @@ void HandleUpload()
     Serial.println("Starting execution.");
     StartExecution();
   }
-  
 }
 
 void HandleUploadRequest()
@@ -287,7 +286,7 @@ void StartWebServer(ESP8266WebServer &server)
   // ensure we're in station mode
   WiFi.mode(WIFI_STA);
 
-  Serial.print("Connecting to network");
+  Serial.print("Connecting to network...");
   WiFi.begin(ssid, password);
 
   int attempts = 0;
@@ -309,7 +308,7 @@ void StartWebServer(ESP8266WebServer &server)
       Serial.print(".");
       ++attempts;
   }
-  Serial.println("Connected.");
+  Serial.println("CONNECTED");
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
 

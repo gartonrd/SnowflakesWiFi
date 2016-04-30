@@ -1,11 +1,5 @@
 //Snowflakes WiFi 
 //  NextPattern()
-//
-//    Apr2016 Kevin Garton
-//      Version 3
-//        Changed calls to print statements to calls to string
-//        builders, now that the print statements are instead
-//        string builders.
 //  
 //    11Mar2016  Dean Garton 
 //      version 2 
