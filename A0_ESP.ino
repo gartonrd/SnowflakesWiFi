@@ -5,11 +5,7 @@ Snowflakes WiFi
 ********************************************************/
 
 //version number
-  #define VERSION 0x0006
-
-//login information for HTTP server
-  const char* ssid = "your_ssid";
-  const char* password = "your_password";
+  #define VERSION 0x0007
 
 //includes
   #include <Wire.h>
@@ -95,15 +91,13 @@ void setup()
 
   InitializePWM();
 
-  DisplayTestPattern(1000);
-
   //get logon information
   LogOnState = 0;
   LogOnStateMachine();
   
   StartWebServer(server);
 
-  DisplayTestPattern(1000);  
+  DisplayTestPattern(1000);
 
   //completely interrupt driven from timer
   StartExecution();

@@ -261,7 +261,7 @@ void ProfileNumberError(uint16_t ProfileNumber)
   Serial.println("");
   
   StopExecution();
-  GetStopExecutionOptions();
+  Serial.print(GetStopExecutionOptions());
   //quit
   PatternState = 7;
 }
@@ -277,7 +277,7 @@ void ProfileStateError(uint8_t Index)
   Serial.println("");
   
   StopExecution();
-  GetStopExecutionOptions();
+  Serial.print(GetStopExecutionOptions());
   //quit
   PatternState = 7;
 }
