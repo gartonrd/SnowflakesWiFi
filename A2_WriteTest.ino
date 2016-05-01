@@ -1,12 +1,8 @@
-//Snowflakes WiFi 
-//  WriteTestData()
-//    see Data[] below for test pattern contents
-//  
-//    11Mar2016  Dean Garton 
-//      version 2 
-//  
-//    18Feb2016  Dean Garton
-//      write a test pattern into the EEPROM
+/********************************************************
+Snowflakes WiFi 
+  A2_WriteTest
+    write a test pattern into the EEPROM
+********************************************************/
 
 //start of patterns ===========================================================================================
 //Toggle

@@ -1,37 +1,9 @@
-//Snowflakes WiFi 
-//  ReadPatternRecord()
-//  GetPatternName()
-//  
-//  InitializeWebQueue()
-//  WebPrint(String output)
-//
-//  GetCheckHeading()
-//  GetCheckRecord()
-//  
-//  GetHeading()
-//  GetRecord()
-//
-//  GetRecordNumber()
-//  GetRecordContents()
-//
-//  GetNewLine()
-//  GetBreakLine()
-//
-//  PatternStateError()
-//  RecordIDError()
-//  ProfileNumberError()
-//  ProfileStateError()
-//
-//    Apr2016 Kevin Garton
-//      Version 3
-//        Changed print functions to string generators.
-// 
-//    11Mar2016  Dean Garton
-//      version 2
-//
-//    18Feb2016  Dean Garton
-//      get and print records
-//      
+/********************************************************
+Snowflakes WiFi 
+  D0_ReadPrint
+    utilities to read records from EEPROM
+    utilities to print messages to the serial port
+********************************************************/ 
 
 void ReadPatternRecord(void)
 {
@@ -224,7 +196,6 @@ String GetBreakLine(void)
 
 void LogOnStateError(void)
 {
-  //print error message
   Serial.println("");
   Serial.print("BAD LOGON STATE: ");
   Serial.println(LogOnState, HEX);
@@ -254,11 +225,8 @@ void PatternStateError(void)
   Serial.println("");
   
   StopExecution();
-<<<<<<< HEAD
   GetStopExecutionOptions();
-=======
   //quit
->>>>>>> Removed comments that appeared redundant.
   PatternState = 7;
 }
 
@@ -274,11 +242,8 @@ void RecordIDError(void)
   
 
   StopExecution();
-<<<<<<< HEAD
   GetStopExecutionOptions();
-=======
   //quit
->>>>>>> Removed comments that appeared redundant.
   PatternState = 7;
 }
 

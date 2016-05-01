@@ -1,31 +1,15 @@
-//Snowflakes WiFi
-//  globals
-//  setup()
-//  loop()
-//  HandleTimerIRQ()
-//  StartExecution()
-//  StopExecution()
-//
-//    Apr2016 Kevin Garton
-//      version 3
-//        implement HTTP server for uploading
-//        patterns in ASCII hex to EEPROM
-//
-//    11Mar2016  Dean Garton
-//      version 2
-//        allow profiles to be redefined for each new pattern
-//        remove scale factor
-//        make all times 16 bits
-//        make all times 10ms resolution
-//        add Blink Delay Time
-//        do not turn all displays off with start of new pattern
-//        show record number in decimal, not alpha
-//
-//    18Feb2016  Dean Garton
-//      display patterns per tables in EEPROM
+/********************************************************
+Snowflakes WiFi 
+  A0_ESP
+    top level routines
+********************************************************/
 
 //version number
   #define VERSION 0x0006
+
+//login information for HTTP server
+  const char* ssid = "your_ssid";
+  const char* password = "your_password";
 
 //includes
   #include <Wire.h>
@@ -110,6 +94,8 @@ void setup()
   InitializeWebQueue();
 
   InitializePWM();
+
+  DisplayTestPattern(1000);
 
   //get logon information
   LogOnState = 0;

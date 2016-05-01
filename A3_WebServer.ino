@@ -1,19 +1,8 @@
-//Snowflakes WiFi
-//  HandleIndex()
-//  AsciiToBytes(uint8_t ascii, int len)
-//  HandleUpload()
-//  HandleUploadRequest()
-//  HandleCurrStatus()
-//  StartWebServer()
-//
-//  Apr2016 Kevin Garton
-//    Version 2
-//        Implemented basic record viewer.
-//
-//  Apr2016 Kevin Garton
-//    Version 1
-//      Implement an HTTP-based interface for uploading
-//      patterns into EEPROM.
+/********************************************************
+Snowflakes WiFi 
+  A3_WebServer
+    interactions with web
+********************************************************/
 
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>

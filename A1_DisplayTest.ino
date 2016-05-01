@@ -1,16 +1,11 @@
-//Snowflakes WiFi 
-//  DisplayTestPattern()
-//  Walk()
-//  VersionNumber()
-//  
-//    11Mar2016  Dean Garton 
-//      version 2 
-//  
-//    18Feb2016  Dean Garton
-//      All Off
-//      Light each flake, one at a time
-//      Display version, flake 1 = LSB
-//      All Off
+/********************************************************
+Snowflakes WiFi 
+  A1_DisplayTest
+    All Off
+    Light each flake, one at a time
+    Display version, flake 1 = LSB
+    All Off  
+********************************************************/
 
 void DisplayTestPattern(uint16_t Delay)
 {

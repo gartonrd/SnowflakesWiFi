@@ -1,12 +1,8 @@
-//Snowflakes WiFi 
-//  GetProfileRecords()
-//  GetPatternRecord()
-//  
-//    11Mar2016  Dean Garton 
-//      version 2 
-//  
-//    18Feb2016  Dean Garton
-//      get records from the table
+/********************************************************
+Snowflakes WiFi 
+  B2_Get
+    get cases for the pattern state machine
+********************************************************/
 
 void GetProfileRecords(void)
 {

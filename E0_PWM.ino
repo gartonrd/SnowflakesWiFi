@@ -1,16 +1,9 @@
-//Snowflakes WiFi 
-//  InitializePWM()
-//  AllPWMOff()
-//  WriteAllPWM()
-//  WritePWMChannel()
-//  WritePWMRegister()
-//  ReadPWMregister()
-//  
-//    11Mar2016  Dean Garton 
-//      version 2 
-//  
-//    18Feb2016  Dean Garton
-//      based on PWM routines from various examples
+/********************************************************
+Snowflakes WiFi 
+  E0_PWM
+    utilities to read/write the PWM(PCA9685) chip
+    based on PWM routines from various examples
+********************************************************/
 
 void InitializePWM(void)
 {

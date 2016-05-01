@@ -1,17 +1,13 @@
-//Snowflakes WiFi 
-//  CheckFirstRecord()
-//  CheckProfileRecords()
-//  CheckPatternRecords()
-//
-//    11Mar2016  Dean Garton 
-//      version 2 
-//  
-//    18Feb2016  Dean Garton 
-//      Check records in the table
+/********************************************************
+Snowflakes WiFi 
+  B1_Check
+    check cases for the pattern state machine
+********************************************************/
 
 void CheckFirstRecord(void)
 {
   uint32_t Length;
+
   ReadPatternRecord();
 
   //case per record ID
@@ -145,7 +141,6 @@ void CheckPatternRecords(void)
       //EEPROM address
       Length = END_OF_TABLE_LENGTH;
       PatternAddress = StartTableAddress;
-
 
       Serial.print(GetCheckHeading());
       Serial.print(GetCheckRecord(Length));

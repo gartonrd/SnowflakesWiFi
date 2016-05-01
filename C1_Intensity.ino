@@ -1,17 +1,8 @@
-//Snowflakes WiFi 
-//  ScaleIntensity()
-//    convert 8 bit intensity (0x00-0xFF) to 
-//    16 bit intensity (0x0000-0x1000)
-//  WriteTimerIntensityState()
-//  WriteFixedIntensity()
-//  WriteRampIntensity()
-//  WriteIntensity()
-//  
-//    11Mar2016  Dean Garton 
-//      version 2 
-//  
-//    18Feb2016  Dean Garton
-//      intensity utilities    
+/********************************************************
+Snowflakes WiFi 
+  C1_Intensity
+    intensity utilities
+********************************************************/
 
 uint16_t ScaleIntensity(uint8_t Intensity)
 {
