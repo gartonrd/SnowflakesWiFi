@@ -1,12 +1,8 @@
-//Snowflakes WiFi 
-//  ProfileStateMachines()
-//  ExecuteProfileStateMachine()
-//     
-//    11Mar2016  Dean Garton 
-//      version 2 
-//  
-//    18Feb2016  Dean Garton
-//      Execute profile for each snowflake
+/********************************************************
+Snowflakes WiFi 
+  C0_ProfileMachines
+    Execute profile for each snowflake
+********************************************************/
 
 void ProfileStateMachines(void)
 {
@@ -16,10 +12,8 @@ void ProfileStateMachines(void)
   Index = 0;
   while(Index < 16)
   {
-    //execute state machine
     ExecuteProfileStateMachine(Index);
 
-    //decrement profile timer
     if(ProfileTimer[Index] > 0)
     {
       ProfileTimer[Index] -=1;
@@ -27,7 +21,6 @@ void ProfileStateMachines(void)
       //if(timeout)
       if(ProfileTimer[Index] == 0)
       {
-        //increment state
         ProfileState[Index] += 1;
       }
     } 
@@ -44,10 +37,8 @@ void ExecuteProfileStateMachine(uint8_t Index)
   uint16_t ElapsedTime;
   uint16_t IntensityMinimum;
 
-  //case per state
   switch(ProfileState[Index])
   { 
-    //do nothing
     case 0x00:
       //do nothing
     break;
@@ -210,7 +201,6 @@ void ExecuteProfileStateMachine(uint8_t Index)
       WriteTimerIntensityState(Index, Timer, Intensity, 0x00);
     break;
 
-    //error
     default:
       ProfileStateError(Index);
     break;

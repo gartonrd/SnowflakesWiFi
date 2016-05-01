@@ -1,31 +1,11 @@
-//Snowflakes WiFi
-//  globals
-//  setup()
-//  loop()
-//  HandleTimerIRQ()
-//  StartExecution()
-//  StopExecution()
-//
-//    Apr2016 Kevin Garton
-//      version 3
-//        implement HTTP server for uploading
-//        patterns in ASCII hex to EEPROM
-//
-//    11Mar2016  Dean Garton
-//      version 2
-//        allow profiles to be redefined for each new pattern
-//        remove scale factor
-//        make all times 16 bits
-//        make all times 10ms resolution
-//        add Blink Delay Time
-//        do not turn all displays off with start of new pattern
-//        show record number in decimal, not alpha
-//
-//    18Feb2016  Dean Garton
-//      display patterns per tables in EEPROM
+/********************************************************
+Snowflakes WiFi 
+  A0_ESP
+    top level routines
+********************************************************/
 
 //version number
-  #define VERSION 0x0006
+  #define VERSION 0x0007
 
 //includes
   #include <Wire.h>
@@ -109,7 +89,6 @@ void setup()
   // See D0_ReadPrint
   InitializeWebQueue();
 
-  //initialize PWM
   InitializePWM();
 
   //get logon information
@@ -118,10 +97,8 @@ void setup()
   
   StartWebServer(server);
 
-  //display test pattern
-  DisplayTestPattern(1000);  
+  DisplayTestPattern(1000);
 
-  //start execution
   //completely interrupt driven from timer
   StartExecution();
   Serial.print(GetStartExecutionOptions());
@@ -137,7 +114,6 @@ void loop()
   //if character typed
   if(Serial.available() > 0)
   { 
-    //get character
     CharacterReceived = Serial.read();
 
     //wait for any more characters to arrive
@@ -146,20 +122,17 @@ void loop()
     //dump any other characters typed
     while(Serial.available() > 0)
     { 
-      //get character
       Serial.read();
     }
 
     //if executing
     if(Execute == 1)
     {
-      //stop ececution
       StopExecution();
       Serial.print(GetStopExecutionOptions());
     }
     else
     {
-      //case per character typed
       switch(CharacterReceived)
       {
         //write flake test patterns to EEPROM
@@ -187,16 +160,13 @@ void loop()
 
 void HandleTimerIRQ(void)
 { 
-  //pattern state machine
   PatternStateMachine();
   
   //if pattern state machine is not redefining profiles
   if(PatternState == 6)
   {
-    //profile state machine
     ProfileStateMachines();
   
-    //write all PWM channels
     WriteAllPWM(PWMBuffer, sizeof(PWMBuffer));
   }
 }
@@ -207,10 +177,8 @@ void StartExecution(void)
    //pattern state machine will initialize itself and profile state machines
    PatternState = 0;
   
-  //attach callback function to ticker
   TimerIRQ.attach_ms(10, HandleTimerIRQ);
 
-  //print message
   Serial.print(GetExecutionStartedDisplay());
 
   //change state
@@ -219,19 +187,15 @@ void StartExecution(void)
 
 void StopExecution(void)
 {
-  //detach callback function from ticker
   TimerIRQ.detach();
 
-  //print message
   Serial.print(GetExecutionStoppedDisplay());
-  
+
   //change state
   Execute = 0;
 
-  //delay
   delay(10);
 
-  //all off
   AllPWMOff();
 }
 

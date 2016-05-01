@@ -1,26 +1,14 @@
-//Snowflakes WiFi 
-// WriteEeprom()
-//  handles as many bytes as are available by accounting for:
-//    may have up to 4 chips
-//    hi memory address bit is part of device address 
-//    small wire buffer
-//    page boundaries
-//    internal write time
-// ReadEeprom()
-//  handles as many bytes as are available by accounting for:
-//    may have up to 4 chips
-//    hi memory address bit is part of device address 
-//    small wire buffer 
-// CalculateEepromDeviceAddress    
-//   calculate device address including:
-//     may have up to 4 chips
-//     hi memory address bit is part of device address
-//     
-//    11Mar2016  Dean Garton 
-//      version 2 
-//  
-//    18Feb2016  Dean Garton
-//      based on EEPROM routines from various examples
+/********************************************************
+Snowflakes WiFi 
+  E1_EEPROM
+    utilities to read/write the EEPROM(CAT24M01) chip
+    handles as many bytes as are available by accounting for:
+      may have up to 4 chips
+      hi memory address bit is part of device address 
+      small wire buffer
+      page boundaries
+      internal write time
+********************************************************/
 
 void WriteEeprom(uint32_t MemoryAddress, uint8_t *Data, uint32_t Length)
 {

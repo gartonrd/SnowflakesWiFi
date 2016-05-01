@@ -1,11 +1,8 @@
-//Snowflakes WiFi 
-//  NextPattern()
-//  
-//    11Mar2016  Dean Garton 
-//      version 2 
-//  
-//    18Feb2016  Dean Garton
-//      switch to the next pattern
+/********************************************************
+Snowflakes WiFi 
+  B4_Next
+    switch to the next pattern
+********************************************************/
 
 void NextPattern(void)
 {
@@ -30,14 +27,10 @@ void NextPattern(void)
     //if profile change requested
     if(ProfileNumber != 0xFF)
     {
-      //set state
       ProfileState[Index] = State[ProfileNumber];
-      
-      //set profile
       ProfileIndex[Index] = ProfileNumber;
     }
 
-    //next
     Index += 1;
   }
 
