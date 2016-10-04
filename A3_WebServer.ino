@@ -14,6 +14,10 @@ unsigned int line_number = 1;
 unsigned int chars_in_line = 0;
 unsigned int uploaded_bytes = 0;
 
+// These are state we need to carry over between upload blocks.
+char fragment = 0x00;
+char during_comment = 0;
+
 void HandleIndex()
 {
   server.send(200, "text/html", main_page);
@@ -24,7 +28,30 @@ String AsciiToBytes(uint8_t* ascii, int len)
 
   int i,j;
   String returner;
-  char newchar = 0x00;
+  String current_line;
+  char newchar;
+
+  // Check for state held over from previous upload block
+  if (fragment != 0x00)
+  {
+    newchar = fragment;
+    chars_in_line += 1;
+  }
+  else
+  {
+    newchar = 0x00;
+  }
+
+  if (during_comment)
+  {
+    if (ascii[0] == '\n'){
+      during_comment = 0;
+      line_number += 1;
+    }
+    else{
+      ascii[0] = '#';
+    }
+  }
   for(j=0; j<len; ++j)
   {
     switch(ascii[j])
@@ -37,7 +64,15 @@ String AsciiToBytes(uint8_t* ascii, int len)
           {
             ++j;
           }
-          line_number += 1;
+          if (j == len){
+            // Mark the state as being in the middle of a comment
+            // so we can skip the rest of it when we get it
+            during_comment = 1;
+          }
+          else
+          {
+              line_number += 1;
+          }
         }
         else
         {
@@ -144,8 +179,12 @@ String AsciiToBytes(uint8_t* ascii, int len)
           );
           newchar = 0x00;
         }
+
+       // DEBUG
+       // Serial.printf("Line %d processed.\n", line_number);
         line_number += 1;
         chars_in_line = 0;
+
       break;
       case ' ':
         // Whitespace; ignore.
@@ -170,10 +209,23 @@ String AsciiToBytes(uint8_t* ascii, int len)
     if(chars_in_line % 2 == 0 && chars_in_line > 0)
     {
       returner += newchar;
+      // DEBUG
+      //Serial.printf("Added '%s' to returner\n", String(newchar, HEX).c_str());
       newchar = 0x00;
     }
   }
 
+  // It's possible for upload blocks to deliver us only part of a line.
+  // In that case, we can be cut off mid-byte. So, if we have the first
+  // nibble of a byte and we need to wait for the second, save that here.
+  if (newchar != 0x00)
+  {
+    fragment = newchar;
+  }
+  else
+  {
+    fragment = 0x00;
+  }
   return returner;
 }
 
@@ -187,7 +239,12 @@ void HandleUpload()
   {
     Serial.println("Stopping execution for upload.");
     StopExecution();
+    // Set any state that might be hanging around to
+    // initial settings
     uploaded_bytes = StartTableAddress;
+    line_number = 1;
+    during_comment = 0;
+    fragment = 0x00;
   }
   else if(upload.status == UPLOAD_FILE_WRITE)
   {
@@ -198,6 +255,7 @@ void HandleUpload()
       upload.currentSize,
       upload.totalSize
     );
+
     String data = AsciiToBytes(
       upload.buf,
       upload.currentSize
