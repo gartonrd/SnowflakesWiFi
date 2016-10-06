@@ -35,7 +35,6 @@ String AsciiToBytes(uint8_t* ascii, int len)
   if (fragment != 0x00)
   {
     newchar = fragment;
-    chars_in_line += 1;
   }
   else
   {
@@ -180,8 +179,8 @@ String AsciiToBytes(uint8_t* ascii, int len)
           newchar = 0x00;
         }
 
-       // DEBUG
-       // Serial.printf("Line %d processed.\n", line_number);
+        //DEBUG
+        //Serial.printf("Line %d processed.\n", line_number);
         line_number += 1;
         chars_in_line = 0;
 
@@ -242,6 +241,7 @@ void HandleUpload()
     // Set any state that might be hanging around to
     // initial settings
     uploaded_bytes = StartTableAddress;
+    chars_in_line = 0;
     line_number = 1;
     during_comment = 0;
     fragment = 0x00;
