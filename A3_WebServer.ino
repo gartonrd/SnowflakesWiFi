@@ -62,6 +62,7 @@ String AsciiToBytes(uint8_t* ascii, int len)
           while(j<len && ascii[j] != '\n')
           {
             ++j;
+            during_comment = 0;
           }
           if (j == len){
             // Mark the state as being in the middle of a comment
@@ -76,8 +77,10 @@ String AsciiToBytes(uint8_t* ascii, int len)
         else
         {
           Serial.printf(
-            "'#' character not in initial position on line %d; ignoring. '#' characters must start at the beginning of a line to indicate a comment.\n",
-            line_number
+            "'#' character not in initial position on line %d (was %d); ignoring. '#' characters must start at the beginning of a line to indicate a comment.\n",
+            line_number,
+            chars_in_line
+            //chars_in_line += 1;
           );
         }
       break;
@@ -170,7 +173,7 @@ String AsciiToBytes(uint8_t* ascii, int len)
         newchar = newchar| (0x0F << ((chars_in_line % 2)*4));
       break;
       case '\n':
-        if(chars_in_line % 2 == 1)
+      if(chars_in_line % 2 == 1)
         {
           Serial.printf("Odd number of ASCII hex characters (%d) on line %d; ignoring final nibble.\n",
             chars_in_line,
@@ -209,7 +212,7 @@ String AsciiToBytes(uint8_t* ascii, int len)
     {
       returner += newchar;
       // DEBUG
-      //Serial.printf("Added '%s' to returner\n", String(newchar, HEX).c_str());
+      //Serial.printf("!*!*!* Added '%s' to returner\n", String(newchar, HEX).c_str());
       newchar = 0x00;
     }
   }
