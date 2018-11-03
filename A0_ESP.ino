@@ -5,7 +5,7 @@ Snowflakes WiFi
 ********************************************************/
 
 //version number
-  #define VERSION 0x000A
+  #define VERSION 0xFFFF
 
 //includes
   #include <Wire.h>
@@ -58,6 +58,7 @@ Snowflakes WiFi
     uint8_t LogOnRecord[52];  //LOGON_LENGTH + RecordID + EndOfString
     char ssid[51];            //LOGON_LENGTH + EndOfString
     char password[51];        //LOGON_LENGTH + EndOfString
+    char *AcBoard;            //output polarity for AC board
 
 //pattern state machine
   //execution
@@ -92,11 +93,12 @@ void setup()
   // See D0_ReadPrint
   InitializeWebQueue();
 
-  InitializePWM();
-
   //get logon information
   LogOnState = 0;
   LogOnStateMachine();
+  AcBoard = "no";
+
+  InitializePWM();
   
   StartWebServer(server);
 
