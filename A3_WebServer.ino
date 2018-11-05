@@ -3,10 +3,6 @@ Snowflakes WiFi
   A3_WebServer
     interactions with web
 ********************************************************/
-
-#include <ESP8266WiFi.h>
-#include <ESP8266WebServer.h>
-
 String main_page = "<HTML><head><script src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js\"></script><script>$(function(){window.setInterval(get_status, 1000);}); function get_status() {var request = new XMLHttpRequest();request.onreadystatechange = function(){if (request.readyState === 4  && request.status === 200){var elt = document.getElementById(\"status\");elt.innerHTML = request.responseText;console.log(request.responseText);}};request.open(\"GET\", \"curr\", true);request.send();}</script></head><form method=\"POST\" enctype=\"multipart/form-data\" action=\"upload\"><input type=\"file\" name=\"filename\"><br /><input type=\"submit\" value=\"Upload pattern\"></form><div class=\"status_container\"><div class=\"status_header\">Recent statuses (most recent at top):</div> </ br><div id=\"status\">No Status Yet Recieved</div></div></HTML>";
 
 // These are used during conversion of ASCII hex to bytes
@@ -17,6 +13,78 @@ unsigned int uploaded_bytes = 0;
 // These are state we need to carry over between upload blocks.
 char fragment = 0x00;
 char during_comment = 0;
+
+void InitializeWebQueue()
+{
+  int j;
+  for(j=0; j<MaxWebQueueSize; ++j)
+  {
+    WebQueue[j] = "";
+  }
+}
+
+void WebPrint(String output)
+{
+  Serial.print(output);
+
+  if(WebQueueSize >= MaxWebQueueSize)
+  {
+    int j;
+    for(j=MaxWebQueueSize-2; j>=0; --j)
+    {
+      WebQueue[j+1] = WebQueue[j];
+    }
+    WebQueue[0] = output;
+  }
+  else
+  {
+    WebQueue[WebQueueSize++] = output;
+  }
+}
+
+void StartWebServer(ESP8266WebServer &server)
+{
+
+  Serial.println("Starting HTTP server...");
+
+  // ensure we're in station mode
+  WiFi.mode(WIFI_STA);
+
+  Serial.print("Connecting to network...");
+  WiFi.begin(Ssid, Password);
+
+  int attempts = 0;
+  int max_attempts = 50;
+  int attempt_delay = 500; // milliseconds
+  while (WiFi.status() != WL_CONNECTED)
+  {
+      if(attempts >= max_attempts)
+      {
+        Serial.printf(
+          "\nGave up after %d attempts (~%ds). Are the SSID and password correct?\n",
+          max_attempts,
+          (max_attempts * attempt_delay) / 1000
+        );
+        Serial.print("Failed to start HTTP server.\n");
+        return;
+      }
+      delay(attempt_delay);
+      Serial.print(".");
+      ++attempts;
+  }
+  Serial.println("CONNECTED");
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+
+  // URL dispatching
+  server.on("/", HTTP_GET, HandleIndex);
+  server.on("/upload", HTTP_POST, HandleUploadRequest, HandleUpload);
+  server.on("/curr", HTTP_GET, HandleCurrStatus);
+
+  // start server
+  server.begin();
+  Serial.println("HTTP server started.");
+}
 
 void HandleIndex()
 {
@@ -231,6 +299,16 @@ String AsciiToBytes(uint8_t* ascii, int len)
   return returner;
 }
 
+void HandleUploadRequest()
+{
+
+  HTTPUpload& upload = server.upload();
+
+  String success_message = String("Upload initaited for file ");
+  success_message += String(upload.filename);
+  server.send(200, "text/plain", success_message);
+}
+
 void HandleUpload()
 {
 
@@ -307,19 +385,8 @@ void HandleUpload()
   }
 }
 
-void HandleUploadRequest()
-{
-
-  HTTPUpload& upload = server.upload();
-
-  String success_message = String("Upload initaited for file ");
-  success_message += String(upload.filename);
-  server.send(200, "text/plain", success_message);
-}
-
 void HandleCurrStatus()
 {
-  // WebOutput is defined in A0_ESP managed in D0_ReadWrite
   int j;
   String output = "";
   for(j=0; j<WebQueueSize; ++j){
@@ -328,47 +395,5 @@ void HandleCurrStatus()
   server.send(200, "text/plain", output);
 }
 
-void StartWebServer(ESP8266WebServer &server)
-{
 
-  Serial.println("Starting HTTP server...");
-
-  // ensure we're in station mode
-  WiFi.mode(WIFI_STA);
-
-  Serial.print("Connecting to network...");
-  WiFi.begin(ssid, password);
-
-  int attempts = 0;
-  int max_attempts = 50;
-  int attempt_delay = 500; // milliseconds
-  while (WiFi.status() != WL_CONNECTED)
-  {
-      if(attempts >= max_attempts)
-      {
-        Serial.printf(
-          "\nGave up after %d attempts (~%ds). Are the SSID and password correct?\n",
-          max_attempts,
-          (max_attempts * attempt_delay) / 1000
-        );
-        Serial.print("Failed to start HTTP server.\n");
-        return;
-      }
-      delay(attempt_delay);
-      Serial.print(".");
-      ++attempts;
-  }
-  Serial.println("CONNECTED");
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
-
-  // URL dispatching
-  server.on("/", HTTP_GET, HandleIndex);
-  server.on("/upload", HTTP_POST, HandleUploadRequest, HandleUpload);
-  server.on("/curr", HTTP_GET, HandleCurrStatus);
-
-  // start server
-  server.begin();
-  Serial.println("HTTP server started.");
-}
 

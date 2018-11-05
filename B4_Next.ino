@@ -12,7 +12,7 @@ void NextPattern(void)
 
   //print data from eeprom
   Length = sizeof(PatternRecord);
-  WebPrint(GetRecord(Length));
+  WebPrint(RecordMessage(Length));
 
   //reset timer
   PatternTimer = U8ToU16(PatternRecord[17], PatternRecord[18]);
