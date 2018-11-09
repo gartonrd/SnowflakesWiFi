@@ -55,6 +55,9 @@ void StoppedMenu(void)
   Serial.print("I to enable ");
   FileToVariable("INTERNET CONNECTION (Y/N)", "/Internet.txt", Internet, sizeof(Internet)/sizeof(char));
   Serial.println("CYCLE POWER to make any changes above take effect");
+  Serial.print("FLASH MEMORY Size = ");
+  Serial.print(ESP.getFlashChipRealSize());
+  Serial.println(" Bytes");
   Serial.println("W to WRITE test pattern");
   Serial.println("X to start EXECUTION");
   Serial.println("------------------------------------------------------");

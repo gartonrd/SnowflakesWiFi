@@ -53,6 +53,7 @@ void StartWebServer(ESP8266WebServer &server)
   Serial.print("Connecting to network...");
   WiFi.begin(Ssid, Password);
 
+  AllPWMOff();
   int attempts = 0;
   int max_attempts = 50;
   int attempt_delay = 500; // milliseconds
@@ -66,16 +67,43 @@ void StartWebServer(ESP8266WebServer &server)
           (max_attempts * attempt_delay) / 1000
         );
         Serial.print("Failed to start HTTP server.\n");
+          AllPWMOff();
+          delay(attempt_delay);
+          WritePWMChannel(14, 0x1000, 0x0000);
+          WritePWMChannel(15, 0x1000, 0x0000);
+          delay(attempt_delay);
+          AllPWMOff();
+          delay(attempt_delay);
+          WritePWMChannel(14, 0x1000, 0x0000);
+          WritePWMChannel(15, 0x1000, 0x0000);
+          delay(attempt_delay);
+          AllPWMOff();
         return;
       }
       delay(attempt_delay);
       Serial.print(".");
+      if(attempts % 2 == 0)
+      {
+        WritePWMChannel(14, 0x1000, 0x0000);
+        WritePWMChannel(15, 0x0000, 0x1000);
+      }
+      else
+      {
+        WritePWMChannel(14, 0x0000, 0x1000);
+        WritePWMChannel(15, 0x1000, 0x0000);
+      }
       ++attempts;
   }
   Serial.println("CONNECTED");
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
-
+  AllPWMOff();
+  delay(attempt_delay);
+  WritePWMChannel(14, 0x1000, 0x0000);
+  WritePWMChannel(15, 0x1000, 0x0000);
+  delay(attempt_delay);
+  AllPWMOff();
+  
   // URL dispatching
   server.on("/", HTTP_GET, HandleIndex);
   server.on("/upload", HTTP_POST, HandleUploadRequest, HandleUpload);
