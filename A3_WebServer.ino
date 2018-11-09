@@ -59,44 +59,49 @@ void StartWebServer(ESP8266WebServer &server)
   int attempt_delay = 500; // milliseconds
   while (WiFi.status() != WL_CONNECTED)
   {
-      if(attempts >= max_attempts)
-      {
-        Serial.printf(
-          "\nGave up after %d attempts (~%ds). Are the SSID and password correct?\n",
-          max_attempts,
-          (max_attempts * attempt_delay) / 1000
-        );
-        Serial.print("Failed to start HTTP server.\n");
-          AllPWMOff();
-          delay(attempt_delay);
-          WritePWMChannel(14, 0x1000, 0x0000);
-          WritePWMChannel(15, 0x1000, 0x0000);
-          delay(attempt_delay);
-          AllPWMOff();
-          delay(attempt_delay);
-          WritePWMChannel(14, 0x1000, 0x0000);
-          WritePWMChannel(15, 0x1000, 0x0000);
-          delay(attempt_delay);
-          AllPWMOff();
-        return;
-      }
+    if(attempts >= max_attempts)
+    {
+      Serial.printf(
+        "\nGave up after %d attempts (~%ds). Are the SSID and password correct?\n",
+        max_attempts,
+        (max_attempts * attempt_delay) / 1000
+      );
+      Serial.print("Failed to start HTTP server.\n");
+      
+      AllPWMOff();
       delay(attempt_delay);
-      Serial.print(".");
-      if(attempts % 2 == 0)
-      {
-        WritePWMChannel(14, 0x1000, 0x0000);
-        WritePWMChannel(15, 0x0000, 0x1000);
-      }
-      else
-      {
-        WritePWMChannel(14, 0x0000, 0x1000);
-        WritePWMChannel(15, 0x1000, 0x0000);
-      }
-      ++attempts;
+      WritePWMChannel(14, 0x1000, 0x0000);
+      WritePWMChannel(15, 0x1000, 0x0000);
+      delay(attempt_delay);
+      AllPWMOff();
+      delay(attempt_delay);
+      WritePWMChannel(14, 0x1000, 0x0000);
+      WritePWMChannel(15, 0x1000, 0x0000);
+      delay(attempt_delay);
+      AllPWMOff();
+      
+      return;
+    }
+    delay(attempt_delay);
+    Serial.print(".");
+    
+    if(attempts % 2 == 0)
+    {
+      WritePWMChannel(14, 0x1000, 0x0000);
+      WritePWMChannel(15, 0x0000, 0x1000);
+    }
+    else
+    {
+      WritePWMChannel(14, 0x0000, 0x1000);
+      WritePWMChannel(15, 0x1000, 0x0000);
+    }
+    
+    ++attempts;
   }
   Serial.println("CONNECTED");
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
+  
   AllPWMOff();
   delay(attempt_delay);
   WritePWMChannel(14, 0x1000, 0x0000);
