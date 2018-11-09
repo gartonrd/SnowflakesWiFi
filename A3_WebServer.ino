@@ -4,7 +4,7 @@ Snowflakes WiFi
     interactions with web
 ********************************************************/
 String main_page = "<HTML><head><script src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js\"></script><script>$(function(){window.setInterval(get_status, 1000);}); function get_status() {var request = new XMLHttpRequest();request.onreadystatechange = function(){if (request.readyState === 4  && request.status === 200){var elt = document.getElementById(\"status\");elt.innerHTML = request.responseText;console.log(request.responseText);}};request.open(\"GET\", \"curr\", true);request.send();}</script></head><form method=\"POST\" enctype=\"multipart/form-data\" action=\"upload\"><input type=\"file\" name=\"filename\"><br /><input type=\"submit\" value=\"Upload pattern\"></form><div class=\"status_container\"><div class=\"status_header\">Recent statuses (most recent at top):</div> </ br><div id=\"status\">No Status Yet Recieved</div></div></HTML>";
-
+  
 // These are used during conversion of ASCII hex to bytes
 unsigned int line_number = 1;
 unsigned int chars_in_line = 0;

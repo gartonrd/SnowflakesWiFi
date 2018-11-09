@@ -128,7 +128,7 @@ void PatternStateError(void)
   Serial.println("");
   
   StopExecution();
-  Serial.print(StoppedMenu());
+  StoppedMenu();
   
   //quit
   PatternState = 7;
@@ -145,7 +145,7 @@ void RecordIDError(void)
   Serial.print(RecordContentsMessage(Length) + "\n");
   
   StopExecution();
-  Serial.print(StoppedMenu());
+  StoppedMenu();
   
   //quit
   PatternState = 7;
@@ -165,7 +165,7 @@ void ProfileNumberError(uint16_t ProfileNumber)
   Serial.println("");
   
   StopExecution();
-  Serial.print(StoppedMenu());
+  StoppedMenu();
   
   //quit
   PatternState = 7;
@@ -182,7 +182,7 @@ void ProfileStateError(uint8_t Index)
   Serial.println("");
   
   StopExecution();
-  Serial.print(StoppedMenu());
+  StoppedMenu();
   
   //quit
   PatternState = 7;

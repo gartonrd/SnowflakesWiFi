@@ -15,6 +15,7 @@ Snowflakes WiFi
   #include <ESP8266mDNS.h>
   #include <WiFiUdp.h>
   #include <ArduinoOTA.h>
+  #include <FS.h>
 
 //defines
   #define START_OF_PATTERN_LENGTH 10;
@@ -31,11 +32,11 @@ Snowflakes WiFi
   uint8_t Execute;
   
 //settings - will be initialized at run time
-    char *Ssid = "ssid";          //ssid for internet connection
-    char *Password = "password";  //password for internet connection
-    char *AcBoard = "n";          //output polarity for AC board
-    char *TestPattern = "y";      //run test pattern
-    char *Internet = "y";         //connect to internet
+    char Ssid[51] = "ssid";          //ssid for internet connection
+    char Password[51] = "password";  //password for internet connection
+    char AcBoard[5] = "n";          //output polarity for AC board
+    char TestPattern[5] = "y";      //run test pattern
+    char Internet[5] = "y";         //connect to internet
 
 // Used to report to the browser;
   const int MaxWebQueueSize = 10;
@@ -81,7 +82,8 @@ void setup()
 {
   Serial.begin(115200);
   
-  Serial.print(InitializeAllSettings());
+  SPIFFS.begin();
+  InitializeAllSettings();
 
   Wire.begin(0, 2);        //ESP8266 SDA=GPIO0 and SCL=GPIO2
   Wire.setClock(400000L);  //400Khz
@@ -125,8 +127,8 @@ void setup()
   
   //completely interrupt driven from timer
   StartExecution();
-  
-  Serial.print(RunMenu());
+   
+  RunMenu();
 }
 
 void loop()
@@ -139,14 +141,15 @@ void loop()
   
   //if character typed
   if(Serial.available() > 0)
-  { 
+  {     
     CharacterReceived = tolower(Serial.read());
 
     //dump remaining characters
-    delay(50);
+    delay(20);
     while(Serial.available() > 0)
     {
       Serial.read();
+      delay(20);
     }
 
     //if executing
@@ -162,11 +165,11 @@ void loop()
     //if executing
     if(Execute == 1)
     {
-      Serial.print(RunMenu());
+      RunMenu();
     }
     else
     {
-      Serial.print(StoppedMenu());
+      StoppedMenu();
     }
   }
 }

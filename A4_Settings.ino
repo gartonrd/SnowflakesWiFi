@@ -4,37 +4,25 @@ Snowflakes WiFi
     routines to manipulate settings
 ********************************************************/
 
-String InitializeAllSettings()
+void InitializeAllSettings()
 {
-  String Result;
-
-  InitializeSetting("NETWORKID", Ssid);
-  InitializeSetting("PASSWORD", Password);
-  InitializeSetting("ACBOARD", AcBoard);
-  InitializeSetting("TESTPATTERN", TestPattern);
-  InitializeSetting("INTERNET", Internet);
-
-  Result += '\n';
-  Result += ShowSetting("SSID = " , Ssid);
-  Result += ShowSetting("PASSWORD = ", Password);
-  Result += ShowSetting("AC BOARD = " , AcBoard);
-  Result += ShowSetting("TEST PATTERN = " , TestPattern);
-  Result += ShowSetting("INTERNET CONNECT= " , Internet);
-  Result += '\n';
-  
-  return Result;
+  Serial.println("");
+  Serial.println("------------------------------------------------------");
+  InitializeSetting("SSID", "/Ssid.txt", Ssid, sizeof(Ssid)/sizeof(char));
+  InitializeSetting("PASSWORD", "/Password.txt", Password, sizeof(Password)/sizeof(char));
+  InitializeSetting("AC BOARD (Y/N)", "/AcBoard.txt", AcBoard, sizeof(AcBoard)/sizeof(char));
+  InitializeSetting("TEST PATTERN (Y/N)", "/TestPattern.txt", TestPattern, sizeof(TestPattern)/sizeof(char));
+  InitializeSetting("INTERNET CONNECTION (Y/N)", "/Internet.txt", Internet, sizeof(Internet)/sizeof(char));
+  Serial.println("------------------------------------------------------");
+  Serial.println("");
 }
 
-String RunMenu()
+void RunMenu()
 {
-  String Result;
-
-  Result += '\n';
-  Result += "---SET LINE ENDING TO NEW LINE---\n";
-  Result += "X to stop EXECUTION\n";
-  Result += '\n';
-  
-  return Result;
+  Serial.println();
+  Serial.println("------------------------------------------------------");
+  Serial.println("X to stop EXECUTION");
+  Serial.println("------------------------------------------------------");
 }
 
 void RunActions(char CharacterReceived)
@@ -52,23 +40,24 @@ void RunActions(char CharacterReceived)
   }
 }
 
-String StoppedMenu(void)
+void StoppedMenu(void)
 {
-  String Result;
-
-  Result += '\n';
-  Result += "---SET LINE ENDING TO NEW LINE---\n";
-  Result += ShowSetting("S to change SSID = " , Ssid);
-  Result += ShowSetting("P to change PASSWORD = ", Password);
-  Result += ShowSetting("A to specify AC BOARD (Y/N) = " , AcBoard);
-  Result += ShowSetting("T to run TEST PATTERN (Y/N)= " , TestPattern);
-  Result += ShowSetting("I to connect to INTERNET = " , Internet);
-  Result += "CYCLE POWER to make any changes above take effect\n";
-  Result += "W to WRITE test pattern\n";
-  Result += "X to start EXECUTION\n";
-  Result += '\n';
-
-  return Result;
+  Serial.println();
+  Serial.println("------------------------------------------------------");
+  Serial.print("S to change ");
+  FileToVariable("SSID", "/Ssid.txt", Ssid, sizeof(Ssid)/sizeof(char));
+  Serial.print("P to change ");
+  FileToVariable("PASSWORD", "/Password.txt", Password, sizeof(Password)/sizeof(char));
+  Serial.print("A to specify ");
+  FileToVariable("AC BOARD (Y/N)", "/AcBoard.txt", AcBoard, sizeof(AcBoard)/sizeof(char));
+  Serial.print("T to run ");
+  FileToVariable("TEST PATTERN (Y/N)", "/TestPattern.txt", TestPattern, sizeof(TestPattern)/sizeof(char));
+  Serial.print("I to enable ");
+  FileToVariable("INTERNET CONNECTION (Y/N)", "/Internet.txt", Internet, sizeof(Internet)/sizeof(char));
+  Serial.println("CYCLE POWER to make any changes above take effect");
+  Serial.println("W to WRITE test pattern");
+  Serial.println("X to start EXECUTION");
+  Serial.println("------------------------------------------------------");
 }
 
 void StoppedActions(char CharacterReceived)
@@ -77,27 +66,27 @@ void StoppedActions(char CharacterReceived)
   switch(CharacterReceived)
   {
     case 's':
-      SetSetting("NETWORKID", Ssid);
+      ChangeSetting("SSID", "/Ssid.txt", Ssid, sizeof(Ssid)/sizeof(char));
       //menu will be displayed in main loop
     break;
 
     case 'p':
-      SetSetting("PASSWORD", Password);
+      ChangeSetting("PASSWORD", "/Password.txt", Password, sizeof(Password)/sizeof(char));
       //menu will be displayed in main loop
     break;
 
     case 'a':
-      SetSetting("ACBOARD", AcBoard);
+      ChangeSetting("AC BOARD (Y/N)", "/AcBoard.txt", AcBoard, sizeof(AcBoard)/sizeof(char));
       //menu will be displayed in main loop
     break;
 
     case 't':
-      SetSetting("TESTPATTERN", TestPattern);
+      ChangeSetting("TEST PATTERN (Y/N)", "/TestPattern.txt", TestPattern, sizeof(TestPattern)/sizeof(char));
       //menu will be displayed in main loop
     break;
 
     case 'i':
-      SetSetting("INTERNET", Internet);
+      ChangeSetting("INTERNET CONNECTION (Y/N)", "/Internet.txt", Internet, sizeof(Internet)/sizeof(char));
       //menu will be displayed in main loop
     break;
 
@@ -115,58 +104,107 @@ void StoppedActions(char CharacterReceived)
       //menu will be displayed in main loop
     break;
   }
-
 }
 
-void InitializeSetting(char *FileName, char* VariableName)
+void InitializeSetting(char *Text, char *FilePath, char *VariableName, int Size)
 {
-  int Result;
-
-  Result = GetSetting(FileName, VariableName);
-  if(Result != 0)
+  if(!SPIFFS.exists(FilePath))
   {
-    SetSetting(FileName, VariableName);
+    SerialToFile(Text, FilePath);
   }
+  FileToVariable(Text, FilePath, VariableName, Size);
 }
 
-void SetSetting(char *FileName, char* VariableName)
+void ChangeSetting(char *Text, char *FilePath, char *VariableName, int Size)
 {
-
-  //stub
-  Ssid = "gartonrd";
-  Password = "silverturkey";
-  AcBoard = "y";
-  TestPattern = "n";
-  Internet = "y";
-
+  SerialToFile(Text, FilePath);
+  FileToVariable(Text, FilePath, VariableName, Size);
 }
 
-int GetSetting(char *FileName, char* VariableName)
+void SerialToFile(char *Text, char *FilePath)
 {
-  int Result;
+  File FileHandle;
+  char Character;
+  int Exit;
 
-  Result = 0;
+  Serial.print("Enter new ");
+  Serial.print(Text);
+  Serial.println(" setting");
   
-  //stub
-  if(Result == 0)
+  while(Serial.available() == 0)
   {
-    Ssid = "gartonrd";
-    Password = "silverturkey";
-    AcBoard = "n";
-    TestPattern = "n";
-    Internet = "y";
   }
-
-  return Result;
-}
-
-String ShowSetting(char *ShowText, char* VariableName)
-{ 
-  String Result;
-
-  Result += ShowText;
-  Result += VariableName;
-  Result += '\n';
   
-  return Result;
+  FileHandle = SPIFFS.open(FilePath, "w");
+  
+  Exit = 0;
+  while(Exit == 0)
+  {
+    Character = Serial.read();
+    FileHandle.print(Character);
+    delay(20);
+    if(Serial.available()== 0)
+    {
+      Exit = 1;
+    }
+  }
+  
+  FileHandle.close();
+}  
+
+void FileToVariable(char *Text, char *FilePath, char *VariableName, int Size)
+{
+  File FileHandle;
+  char Character;
+  int Index;
+  int Exit;
+ 
+  FileHandle = SPIFFS.open(FilePath, "r");
+  if(!FileHandle)
+  {
+    strcpy(VariableName, strcat("Unable to Open", FilePath));
+  }
+  else
+  {
+    Index = 0;
+    Exit = 0;
+    while(Exit == 0)
+    {
+      Character = FileHandle.read();
+      switch(Character)
+      {
+        case '\n':
+          VariableName[Index] = '\0';
+          Exit = 1;
+        break;
+
+        case '\r':
+          VariableName[Index] = '\0';
+          Exit = 1;
+        break;
+
+        default:
+          VariableName[Index] = Character;
+          Index += 1;
+          
+          if(Index >= (Size-1))
+          {
+            VariableName[Index] = '\0';
+            Exit = 1;
+          }
+          
+          if(Index >= FileHandle.size())
+          {
+            VariableName[Index] = '\0';
+            Exit = 1;
+          }
+        break;
+      }
+    }
+    FileHandle.close();
+  }
+  Serial.print(Text);
+  Serial.print(" = ");
+  Serial.println(VariableName);
 }
+
