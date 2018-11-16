@@ -34,9 +34,9 @@ Snowflakes WiFi
 //settings - will be initialized at run time
     char Ssid[51] = "ssid";          //ssid for internet connection
     char Password[51] = "password";  //password for internet connection
-    char AcBoard[5] = "n";          //output polarity for AC board
-    char TestPattern[5] = "y";      //run test pattern
-    char Internet[5] = "y";         //connect to internet
+    char AcBoard[2] = "n";          //output polarity for AC board
+    char TestPattern[2] = "y";      //run test pattern
+    char Internet[2] = "y";         //connect to internet
 
 // Used to report to the browser;
   const int MaxWebQueueSize = 10;

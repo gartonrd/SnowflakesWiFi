@@ -8,6 +8,7 @@ void InitializeAllSettings()
 {
   Serial.println("");
   Serial.println("------------------------------------------------------");
+  FlashSizeMessage();
   InitializeSetting("SSID", "/Ssid.txt", Ssid, sizeof(Ssid)/sizeof(char));
   InitializeSetting("PASSWORD", "/Password.txt", Password, sizeof(Password)/sizeof(char));
   InitializeSetting("AC BOARD (Y/N)", "/AcBoard.txt", AcBoard, sizeof(AcBoard)/sizeof(char));
@@ -21,6 +22,7 @@ void RunMenu()
 {
   Serial.println();
   Serial.println("------------------------------------------------------");
+  FlashSizeMessage();
   Serial.println("X to stop EXECUTION");
   Serial.println("------------------------------------------------------");
 }
@@ -44,6 +46,7 @@ void StoppedMenu(void)
 {
   Serial.println();
   Serial.println("------------------------------------------------------");
+  FlashSizeMessage();
   Serial.print("S to change ");
   FileToVariable("SSID", "/Ssid.txt", Ssid, sizeof(Ssid)/sizeof(char));
   Serial.print("P to change ");
@@ -55,9 +58,6 @@ void StoppedMenu(void)
   Serial.print("I to enable ");
   FileToVariable("INTERNET CONNECTION (Y/N)", "/Internet.txt", Internet, sizeof(Internet)/sizeof(char));
   Serial.println("CYCLE POWER to make any changes above take effect");
-  Serial.print("FLASH MEMORY Size = ");
-  Serial.print(ESP.getFlashChipRealSize());
-  Serial.println(" Bytes");
   Serial.println("W to WRITE test pattern");
   Serial.println("X to start EXECUTION");
   Serial.println("------------------------------------------------------");
@@ -209,5 +209,12 @@ void FileToVariable(char *Text, char *FilePath, char *VariableName, int Size)
   Serial.print(Text);
   Serial.print(" = ");
   Serial.println(VariableName);
+}
+
+void FlashSizeMessage()
+{
+  Serial.print("FLASH MEMORY Size = ");
+  Serial.print(ESP.getFlashChipRealSize());
+  Serial.println(" Bytes");
 }
 

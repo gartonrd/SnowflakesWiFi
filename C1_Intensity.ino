@@ -7,24 +7,29 @@ Snowflakes WiFi
 uint16_t ScaleIntensity(uint8_t Intensity)
 {
 uint16_t Intensity16;
-
-if(Intensity >= 0xFF)
-{
-  Intensity16 = 0x1000;
-}
-else
-{
-  if(Intensity <= 16)
+  if(Intensity == 0)
   {
-    Intensity16 = Intensity;
+    Intensity16 = 0x0000;
   }
   else
   {
-    Intensity16 = (Intensity * Intensity) / 16;
+    if(Intensity >= 0xFF)
+    {
+      Intensity16 = 0x1000;
+    }
+    else
+    {
+      if(tolower(AcBoard[0]) == 'y')
+      {
+        Intensity16 = ((0xD9 * Intensity)/0x10) + 0x0245;    
+      }
+      else
+      {
+        Intensity16 = (0x0A * Intensity) + 0;     
+      }
+    }
   }
-}
-
-return Intensity16;
+  return Intensity16;
 }
 
 void WriteTimerIntensityState(uint8_t Index, uint32_t Timer, uint16_t Intensity, uint8_t  State)
@@ -41,7 +46,7 @@ void WriteRampIntensity(uint8_t Index, uint16_t ElapsedTime, uint16_t IntensityM
   uint64_t Numerator64;
   uint64_t Denominator64;
   uint64_t Intensity64;
-  uint16_t Intensity8;
+  uint16_t Intensity16;
 
   ElapsedTime64 = ElapsedTime;
   IntensityMinimum64 = IntensityMinimum;
@@ -49,9 +54,9 @@ void WriteRampIntensity(uint8_t Index, uint16_t ElapsedTime, uint16_t IntensityM
   Denominator64 = Denominator[ProfileIndex[Index]];
 
   Intensity64 = ((Numerator64 * ElapsedTime64 * ElapsedTime64) / Denominator64) + IntensityMinimum64;
-  Intensity8 = Intensity64;
+  Intensity16 = Intensity64;
 
-  WriteIntensity(Index, Intensity8);
+  WriteIntensity(Index, Intensity16);
 }
 
 void WriteIntensity(uint8_t Index, uint16_t Intensity)
