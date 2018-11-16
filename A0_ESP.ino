@@ -5,7 +5,7 @@ Snowflakes WiFi
 ********************************************************/
 
 //version number
-  #define VERSION 0xFFFF
+  #define VERSION 0x000A
 
 //includes
   #include <Wire.h>
