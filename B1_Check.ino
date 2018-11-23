@@ -16,7 +16,7 @@ void CheckFirstRecord(void)
     //start of pattern record
     case 0x90:
       //print break line
-      Serial.print(GetBreakLine());
+      Serial.print(BreakLineMessage());
 
       //next
       PatternState = 3;
@@ -33,11 +33,11 @@ void CheckFirstRecord(void)
       PatternAddress = StartTableAddress;
 
       //print
-      Serial.print(GetCheckHeading());
-      Serial.print(GetCheckRecord(Length));
+      Serial.print(CheckHeadingMessage());
+      Serial.print(CheckRecordMessage(Length));
 
       //next
-      Serial.print(GetBreakLine());
+      Serial.print(BreakLineMessage());
       PatternState = 7;
     break;
 
@@ -68,7 +68,7 @@ void CheckProfileRecords(void)
       //get profile number
       ProfileNumber = PatternRecord[1];
 
-      Serial.print(GetCheckRecord(Length));
+      Serial.print(CheckRecordMessage(Length));
 
       ProfileSize = PROFILE_SIZE
       if(ProfileNumber >= ProfileSize)
@@ -111,7 +111,7 @@ void CheckPatternRecords(void)
       Length = PATTERN_LENGTH;
       PatternAddress += Length;
       
-      Serial.print(GetCheckRecord(Length));
+      Serial.print(CheckRecordMessage(Length));
     break;
 
     //start of pattern record
@@ -124,8 +124,8 @@ void CheckPatternRecords(void)
       Length = START_OF_PATTERN_LENGTH;
       PatternAddress += Length;
 
-      Serial.print(GetCheckHeading());
-      Serial.print(GetCheckRecord(Length));
+      Serial.print(CheckHeadingMessage());
+      Serial.print(CheckRecordMessage(Length));
       Serial.print('\n');
 
       //next
@@ -142,10 +142,10 @@ void CheckPatternRecords(void)
       Length = END_OF_TABLE_LENGTH;
       PatternAddress = StartTableAddress;
 
-      Serial.print(GetCheckHeading());
-      Serial.print(GetCheckRecord(Length));
+      Serial.print(CheckHeadingMessage());
+      Serial.print(CheckRecordMessage(Length));
 
-      Serial.print(GetBreakLine());
+      Serial.print(BreakLineMessage());
       //next
       PatternState = 5;
     break;

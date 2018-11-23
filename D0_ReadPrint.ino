@@ -5,6 +5,9 @@ Snowflakes WiFi
     utilities to print messages to the serial port
 ********************************************************/ 
 
+/********************************************************
+    utilities to read records from EEPROM
+********************************************************/
 void ReadPatternRecord(void)
 {
   uint32_t Length;
@@ -14,145 +17,64 @@ void ReadPatternRecord(void)
   ReadEeprom(PatternAddress, PatternRecord, Length);
 }
 
-void ReadLogOnRecord(void)
-{
-  uint32_t Length;
-  
-  Length = sizeof(LogOnRecord);
-  ReadEeprom(LogOnAddress, LogOnRecord, Length);
-}
+/********************************************************
+    informational messages
+********************************************************/
 
-String GetPatternName(void)
-{
-  uint8_t Index;
-
-  //loop to copy characters
-  Index = 0;
-  while(Index < 8)
-  {
-    PatternName[Index] = PatternRecord[Index+2];
-    Index += 1;
-  }
-
-  PatternName[8] = '\0';
-  return PatternName;
-}
-
-void InitializeWebQueue(){
-  int j;
-  for(j=0; j<MaxWebQueueSize; ++j){
-    WebQueue[j] = "";
-  }
-}
-
-void WebPrint(String output)
-{
-  Serial.print(output);
-
-  if(WebQueueSize >= MaxWebQueueSize)
-  {
-    int j;
-    for(j=MaxWebQueueSize-2; j>=0; --j)
-    {
-      WebQueue[j+1] = WebQueue[j];
-    }
-    WebQueue[0] = output;
-  }
-  else
-  {
-    WebQueue[WebQueueSize++] = output;
-  }
-}
-
-String GetExecutionStartedDisplay()
+String ExecutionStartedMessage()
 {
   return "\nEXECUTION STARTED\n";
 }
 
-String GetStartExecutionOptions()
-{
-  return "Send any character to stop execution\n";
-}
-
-String GetExecutionStoppedDisplay()
+String ExecutionStoppedMessage()
 {
   return "\nEXECUTION STOPPED\n";
 }
 
-String GetStopExecutionOptions(void)
-{
-  String returner = "Send L to write logon information \n";
-  returner += "Send W to write flake test pattern table\n";
-  returner += "Send any other character to start execution\n";
-  return returner;
-}
-
-String GetWriteTestDataDone()
+String WriteTestDataDoneMessage()
 {
   return "\nFLAKE TEST PATTERN TABLE WRITTEN\n";
 }
 
-String GetSSIDPrompt(void)
-{
-  return "\nEnter SSID + Newline\n";
-}
+/********************************************************
+    run time messages
+********************************************************/
 
-String GetPasswordDisplay()
-{
-  String returner = "\nPassword is: ";
-  returner += password;
-  returner += '\n';
-  return returner;
-}
-
-String GetPasswordPrompt(void)
-{
-  return "Enter Password + Newline\n";
-}
-
-String GetSsidDisplay(void)
-{
-  String returner = "SSID is: ";
-  returner += String(ssid);
-  returner += '\n';
-  return returner;
-}
-
-String GetCheckHeading(void)
+String CheckHeadingMessage(void)
 {
   return "\nPatternName  Record# : RecordContents\n";
 }
 
-String  GetCheckRecord(uint32_t Length)
+String  CheckRecordMessage(uint32_t Length)
 { 
   String check_record;
   check_record += PatternName;
   check_record += "     ";
-  check_record += GetRecordNumber();
+  check_record += RecordNumberMessage();
   check_record += "       : ";
-  check_record += GetRecordContents(Length);
+  check_record += RecordContentsMessage(Length);
   return check_record;
 }
 
-String GetHeading(void)
+String HeadingMessage(void)
 {
   return "\nPatternName  Reps  Record# : RecordContents\n";
 }
 
-String  GetRecord(uint32_t Length)
+String  RecordMessage(uint32_t Length)
 { 
   String record;
   record += PatternName;
   record += "     ";
   record += PatternReps;
   record += "     ";
-  record += GetRecordNumber();
+  record += RecordNumberMessage();
   record += "       : ";
-  record += GetRecordContents(Length);
+  record += RecordContentsMessage(Length);
   return record;
 }
 
-String GetRecordNumber()
+String RecordNumberMessage()
 {
   switch(PatternRecord[0])
   {
@@ -173,7 +95,7 @@ String GetRecordNumber()
   }
 }
 
-String GetRecordContents(uint32_t Length)
+String RecordContentsMessage(uint32_t Length)
 {
   uint16_t Index;
   String contents;
@@ -189,33 +111,14 @@ String GetRecordContents(uint32_t Length)
   return contents;
 }
 
-String GetBreakLine(void)
+String BreakLineMessage(void)
 {
   return "\n==================================\n";
 }
 
-void LogOnStateError(void)
-{
-  Serial.println("");
-  Serial.print("BAD LOGON STATE: ");
-  Serial.println(LogOnState, HEX);
-  Serial.println("");
-  
-  //exit
-  LogOnState = 7;
-}
-
-void LogOnLengthError(void)
-{
-  uint8_t Length;
-    
-  //print error message
-  Length = LOGON_LENGTH;
-  Serial.println("");
-  Serial.print("BAD ENTRY, MAXIMUM IS: ");
-  Serial.println(Length);
-  Serial.println("TRY AGAIN");
- }
+/********************************************************
+    error messages
+********************************************************/
 
 void PatternStateError(void)
 {
@@ -225,7 +128,8 @@ void PatternStateError(void)
   Serial.println("");
   
   StopExecution();
-  GetStopExecutionOptions();
+  StoppedMenu();
+  
   //quit
   PatternState = 7;
 }
@@ -238,11 +142,11 @@ void RecordIDError(void)
   Serial.print("BAD RECORD ID: ");
 
   Length = sizeof(PatternRecord);
-  Serial.print(GetRecordContents(Length) + "\n");
+  Serial.print(RecordContentsMessage(Length) + "\n");
   
-
   StopExecution();
-  GetStopExecutionOptions();
+  StoppedMenu();
+  
   //quit
   PatternState = 7;
 }
@@ -261,7 +165,8 @@ void ProfileNumberError(uint16_t ProfileNumber)
   Serial.println("");
   
   StopExecution();
-  Serial.print(GetStopExecutionOptions());
+  StoppedMenu();
+  
   //quit
   PatternState = 7;
 }
@@ -277,7 +182,8 @@ void ProfileStateError(uint8_t Index)
   Serial.println("");
   
   StopExecution();
-  Serial.print(GetStopExecutionOptions());
+  StoppedMenu();
+  
   //quit
   PatternState = 7;
 }

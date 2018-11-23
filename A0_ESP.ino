@@ -5,13 +5,17 @@ Snowflakes WiFi
 ********************************************************/
 
 //version number
-  #define VERSION 0x0009
+  #define VERSION 0x000A
 
 //includes
   #include <Wire.h>
   #include <Ticker.h>
   #include <ESP8266WiFi.h>
   #include <ESP8266WebServer.h>
+  #include <ESP8266mDNS.h>
+  #include <WiFiUdp.h>
+  #include <ArduinoOTA.h>
+  #include <FS.h>
 
 //defines
   #define START_OF_PATTERN_LENGTH 10;
@@ -19,7 +23,6 @@ Snowflakes WiFi
   #define PATTERN_LENGTH 19;           //also change in PatternRecord[] below
   #define END_OF_TABLE_LENGTH 1;
   #define PROFILE_SIZE 36;             //also change in profile parameters[] below
-  #define LOGON_LENGTH 50;             //also change in LogonRecord, ssid, and password below
 
 //objects
   Ticker TimerIRQ;
@@ -27,8 +30,15 @@ Snowflakes WiFi
   
 //global variables
   uint8_t Execute;
+  
+//settings - will be initialized at run time
+    char Ssid[51] = "ssid";          //ssid for internet connection
+    char Password[51] = "password";  //password for internet connection
+    char AcBoard[2] = "n";          //output polarity for AC board
+    char TestPattern[2] = "y";      //run test pattern
+    char Internet[2] = "y";         //connect to internet
 
-// Used to report to the browser; see D0_ReadPrint
+// Used to report to the browser;
   const int MaxWebQueueSize = 10;
   int WebQueueSize = 0;
   String WebQueue[MaxWebQueueSize];
@@ -44,21 +54,10 @@ Snowflakes WiFi
   uint16_t BlinkOnTime[36];
   uint16_t BlinkOffTime[36];
 
-//logon state machine
-  //execution
-    uint8_t  LogOnState;
-    uint32_t LogOnAddress;
-  //bookkeeping
-    uint32_t StartTableAddress;
-    uint8_t LogOnIndex;
-  //buffers
-    uint8_t LogOnRecord[52];  //LOGON_LENGTH + RecordID + EndOfString
-    char ssid[51];            //LOGON_LENGTH + EndOfString
-    char password[51];        //LOGON_LENGTH + EndOfString
-
 //pattern state machine
   //execution
     uint8_t  PatternState;
+    uint32_t StartTableAddress;
     uint32_t PatternAddress;
     uint16_t PatternTimer;
   //bookkeeping
@@ -81,79 +80,96 @@ Snowflakes WiFi
 
 void setup()
 {
-  //begin library routines
   Serial.begin(115200);
-  Wire.begin(0, 2);        //ESP8266 SDA=0 and SCL=2
+  
+  SPIFFS.begin();
+  InitializeAllSettings();
+
+  Wire.begin(0, 2);        //ESP8266 SDA=GPIO0 and SCL=GPIO2
   Wire.setClock(400000L);  //400Khz
-
-  // See D0_ReadPrint
-  InitializeWebQueue();
-
   InitializePWM();
 
-  //get logon information
-  LogOnState = 0;
-  LogOnStateMachine();
+  if(tolower(TestPattern[0]) == 'y')
+  {
+    DisplayTestPattern(1000);
+  }
   
-  StartWebServer(server);
-
-  DisplayTestPattern(1000);
-
+  if(tolower(Internet[0]) == 'y')
+  {
+    InitializeWebQueue();
+    StartWebServer(server);
+    
+    ArduinoOTA.onStart([]()
+    {
+      Serial.println("OTA Start");
+    });
+    
+    ArduinoOTA.onEnd([]()
+    {
+      Serial.println("\nOTA End");
+    });
+  
+    ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+      Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
+    });
+    
+    ArduinoOTA.onError([](ota_error_t error) {
+      Serial.printf("Error[%u]: ", error);
+      if (error == OTA_AUTH_ERROR) Serial.println("Auth Failed");
+      else if (error == OTA_BEGIN_ERROR) Serial.println("Begin Failed");
+      else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
+      else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
+      else if (error == OTA_END_ERROR) Serial.println("End Failed");
+    });
+    
+    ArduinoOTA.begin();
+  }
+  
   //completely interrupt driven from timer
   StartExecution();
-  Serial.print(GetStartExecutionOptions());
+   
+  RunMenu();
 }
 
 void loop()
-{ 
+{
   char CharacterReceived;
 
-  // Check for activity on HTTP server
+  // Check for activity on internet
   server.handleClient();
+  ArduinoOTA.handle();
   
   //if character typed
   if(Serial.available() > 0)
-  { 
-    CharacterReceived = Serial.read();
+  {     
+    CharacterReceived = tolower(Serial.read());
 
-    //wait for any more characters to arrive
-    delay(10);
-    
-    //dump any other characters typed
+    //dump remaining characters
+    delay(20);
     while(Serial.available() > 0)
-    { 
+    {
       Serial.read();
+      delay(20);
     }
 
     //if executing
     if(Execute == 1)
     {
-      StopExecution();
-      Serial.print(GetStopExecutionOptions());
+      RunActions(CharacterReceived);
     }
     else
     {
-      switch(CharacterReceived)
-      {
-        //write flake test patterns to EEPROM
-        case 'W':
-          WriteTestData();
-          Serial.print(GetStopExecutionOptions());
-        break;
+      StoppedActions(CharacterReceived);
+    }
 
-        //write logon information to EEPROM
-        case 'L':
-          LogOnState = 1;
-          LogOnStateMachine();
-          Serial.print(GetStopExecutionOptions());
-        break;
-    
-        //start execution
-        default:
-          StartExecution();
-          Serial.print(GetStartExecutionOptions());
-        break;
-      }
+    //if executing
+    if(Execute == 1)
+    {
+      RunMenu();
+    }
+    else
+    {
+      StoppedMenu();
     }
   }
 }
@@ -179,7 +195,7 @@ void StartExecution(void)
   
   TimerIRQ.attach_ms(10, HandleTimerIRQ);
 
-  Serial.print(GetExecutionStartedDisplay());
+  Serial.print(ExecutionStartedMessage());
 
   //change state
   Execute = 1;
@@ -189,7 +205,7 @@ void StopExecution(void)
 {
   TimerIRQ.detach();
 
-  Serial.print(GetExecutionStoppedDisplay());
+  Serial.print(ExecutionStoppedMessage());
 
   //change state
   Execute = 0;

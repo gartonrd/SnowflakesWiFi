@@ -71,7 +71,7 @@ void PatternStateMachine(void)
 void InitializeStateMachines()
 {
   uint8_t Index;
-
+    StartTableAddress = 0;
     PatternAddress = StartTableAddress;
     PatternTimer = 0;
     

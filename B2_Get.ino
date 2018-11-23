@@ -117,7 +117,7 @@ void GetPatternRecord(void)
           PatternAddress = PatternStartAddress;
         }
 
-        Serial.print(GetHeading());
+        Serial.print(HeadingMessage());
       break;
 
       //end of table record
@@ -137,7 +137,7 @@ void GetPatternRecord(void)
           //EEPROM address
           PatternAddress = StartTableAddress;
 
-          Serial.print(GetBreakLine());
+          Serial.print(BreakLineMessage());
         }
         else
         {
@@ -147,7 +147,7 @@ void GetPatternRecord(void)
           //EEPROM address
           PatternAddress = PatternStartAddress;
 
-          Serial.print(GetHeading());
+          Serial.print(HeadingMessage());
         }
       break;
 
@@ -170,4 +170,20 @@ void GetPatternRecord(void)
       break;
     }
   }
+}
+
+String GetPatternName(void)
+{
+  uint8_t Index;
+
+  //loop to copy characters
+  Index = 0;
+  while(Index < 8)
+  {
+    PatternName[Index] = PatternRecord[Index+2];
+    Index += 1;
+  }
+
+  PatternName[8] = '\0';
+  return PatternName;
 }

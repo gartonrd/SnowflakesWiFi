@@ -7,6 +7,8 @@ Snowflakes WiFi
 
 void InitializePWM(void)
 {
+  uint8_t Mode2;
+  
   //set update frequency to maximum rate
   WritePWMRegister(0x00, 0x10);  //go to sleep
   WritePWMRegister(0xFE, 0x03);  //set prescaler
@@ -22,11 +24,24 @@ void InitializePWM(void)
   WritePWMRegister(0x00, 0xA0);
 
   //set mode 2 register
-  //  outputs open drain
-  //  outputs inverted
-  //  outputs change on ACK
-  //  outputs off when disabled
-  WritePWMRegister(0x01, 0x18);
+  if(tolower(AcBoard[0]) == 'y')
+  {
+    //  outputs not inverted
+    //  outputs change on ACK
+    //  outputs open drain
+    //  outputs off when disabled
+    Mode2 = 0x08;      
+  }
+  else
+  {
+    //  outputs inverted
+    //  outputs change on ACK
+    //  outputs open drain
+    //  outputs off when disabled
+    Mode2 = 0x18;       
+  }
+
+  WritePWMRegister(0x01, Mode2);
 
   AllPWMOff();
 }
