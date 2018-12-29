@@ -5,7 +5,7 @@ Snowflakes WiFi
 ********************************************************/
 
 //version number
-  #define VERSION 0x000A
+  #define VERSION 0x000B
 
 //includes
   #include <Wire.h>
@@ -101,6 +101,7 @@ void setup()
     
     ArduinoOTA.onStart([]()
     {
+      StopExecution();
       Serial.println("OTA Start");
     });
     
