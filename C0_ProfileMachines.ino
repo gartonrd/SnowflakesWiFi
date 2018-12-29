@@ -44,7 +44,7 @@ void ExecuteProfileStateMachine(uint8_t Index)
     case 0x00:
       Timer = 0;
       Intensity = StartIntensity[ProfileIndex[Index]];
-      WriteTimerIntensityState(Index, Timer, Intensity, 0x70);
+      WriteTimerIntensityState(Index, Timer, Intensity, 0xFF);
     break;
 
     //blink off once --------------------------------------------------------
@@ -64,7 +64,7 @@ void ExecuteProfileStateMachine(uint8_t Index)
     case 0x12:
       Timer = 0;
       Intensity = StartIntensity[ProfileIndex[Index]];
-      WriteTimerIntensityState(Index, Timer, Intensity, 0x70);
+      WriteTimerIntensityState(Index, Timer, Intensity, 0xFF);
     break;
 
  //blink on once ---------------------------------------------------------
@@ -84,27 +84,7 @@ void ExecuteProfileStateMachine(uint8_t Index)
     case 0x22:
       Timer = 0;
       Intensity = 0x0000;
-      WriteTimerIntensityState(Index, Timer, Intensity, 0x70);
-    break;
-
-    //delay on once ---------------------------------------------------------
-    //init delay on once
-    case 0xA0:
-      Timer = BlinkDelayTime[ProfileIndex[Index]];
-      Intensity = 0x0000;
-      WriteTimerIntensityState(Index, Timer, Intensity, 0xA1);
-    break;
-
-    //delay on once
-    case 0xA1:
-      //wait for timeout
-    break;
-
-    //delay on once timeout
-    case 0xA2:
-      Timer = BlinkOnTime[ProfileIndex[Index]];
-      Intensity = StartIntensity[ProfileIndex[Index]];
-      WriteTimerIntensityState(Index, Timer, Intensity, 0x21);
+      WriteTimerIntensityState(Index, Timer, Intensity, 0xFF);
     break;
 
     //blink -----------------------------------------------------------------
@@ -124,7 +104,7 @@ void ExecuteProfileStateMachine(uint8_t Index)
     //blink on timeout
     case 0x32:
       Timer = BlinkOffTime[ProfileIndex[Index]];
-      Intensity = 0x0000;
+      Intensity = EndIntensity[ProfileIndex[Index]];
       WriteTimerIntensityState(Index, Timer, Intensity, 0x33);
     break;
     
@@ -135,26 +115,6 @@ void ExecuteProfileStateMachine(uint8_t Index)
     
     //blink off timeout
     case 0x34:
-      Timer = BlinkOnTime[ProfileIndex[Index]];
-      Intensity = StartIntensity[ProfileIndex[Index]];
-      WriteTimerIntensityState(Index, Timer, Intensity, 0x31);
-    break;
-
-    //delay blink -----------------------------------------------------------
-    //init delay blink
-    case 0xB0:
-      Timer = BlinkDelayTime[ProfileIndex[Index]];
-      Intensity = 0x0000;
-      WriteTimerIntensityState(Index, Timer, Intensity, 0xB1);
-    break;
-
-    //delay blink
-    case 0xB1:
-      //wait for timeout
-    break;
-
-    //delay blink timeout
-    case 0xB2:
       Timer = BlinkOnTime[ProfileIndex[Index]];
       Intensity = StartIntensity[ProfileIndex[Index]];
       WriteTimerIntensityState(Index, Timer, Intensity, 0x31);
@@ -180,19 +140,59 @@ void ExecuteProfileStateMachine(uint8_t Index)
     case 0x42:
       Timer = 0;
       Intensity = EndIntensity[ProfileIndex[Index]];
-      WriteTimerIntensityState(Index, Timer, Intensity, 0x70);
+      WriteTimerIntensityState(Index, Timer, Intensity, 0xFF);
+    break;
+
+    //delay on once ---------------------------------------------------------
+    //init delay on once
+    case 0x60:
+      Timer = BlinkDelayTime[ProfileIndex[Index]];
+      Intensity = 0x0000;
+      WriteTimerIntensityState(Index, Timer, Intensity, 0x61);
+    break;
+
+    //delay on once
+    case 0x61:
+      //wait for timeout
+    break;
+
+    //delay on once timeout
+    case 0x62:
+      Timer = BlinkOnTime[ProfileIndex[Index]];
+      Intensity = StartIntensity[ProfileIndex[Index]];
+      WriteTimerIntensityState(Index, Timer, Intensity, 0x21);
+    break;
+
+    //delay blink -----------------------------------------------------------
+    //init delay blink
+    case 0x70:
+      Timer = BlinkDelayTime[ProfileIndex[Index]];
+      Intensity = 0x0000;
+      WriteTimerIntensityState(Index, Timer, Intensity, 0x71);
+    break;
+
+    //delay blink
+    case 0x71:
+      //wait for timeout
+    break;
+
+    //delay blink timeout
+    case 0x72:
+      Timer = BlinkOnTime[ProfileIndex[Index]];
+      Intensity = StartIntensity[ProfileIndex[Index]];
+      WriteTimerIntensityState(Index, Timer, Intensity, 0x31);
     break;
  
     //ramp down ------------------------------------------------------------- 
     //init ramp down
-    case 0x50:
+    case 0x80:
       Timer = RampTime[ProfileIndex[Index]];
       Intensity = StartIntensity[ProfileIndex[Index]];
-      WriteTimerIntensityState(Index, Timer, Intensity, 0x51);
+      WriteTimerIntensityState(Index, Timer, Intensity, 0x81);
     break;
 
     //ramp down
-    case 0x51:
+    case 0x81:
       //next intensity
       ElapsedTime = ProfileTimer[Index];
       IntensityMinimum = EndIntensity[ProfileIndex[Index]];
@@ -200,14 +200,14 @@ void ExecuteProfileStateMachine(uint8_t Index)
     break;
 
     //ramp down timeout
-    case 0x52:
+    case 0x82:
       Timer = 0;
       Intensity = EndIntensity[ProfileIndex[Index]];
-      WriteTimerIntensityState(Index, Timer, Intensity, 0x70);
+      WriteTimerIntensityState(Index, Timer, Intensity, 0xFF);
     break;
 
     //do nothing ------------------------------------------------------------
-    case 0x70:
+    case 0xFF:
       //do nothing
     break;
     

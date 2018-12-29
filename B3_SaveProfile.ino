@@ -51,7 +51,7 @@ void SaveProfile(uint8_t ProfileNumber8)
     State8 |= 0x20;
     if(BlinkDelayTime16 != 0)
     {
-      State8 |= 0x80;
+      State8 |= 0x40;
     }
   }
 
@@ -64,7 +64,7 @@ void SaveProfile(uint8_t ProfileNumber8)
     }
     else
     {
-      State8 = 0x50;
+      State8 = 0x80;
       Numerator[ProfileNumber8] = StartIntensity16 - EndIntensity16;
     }
   }
